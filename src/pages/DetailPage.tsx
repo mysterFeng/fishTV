@@ -1,39 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import VideoDetail from '../components/VideoDetail';
-
-// In a real application, this would come from API or fetch based on ID
-const getVideoData = (id: string) => {
-  // This is just a placeholder - in a real app, you would fetch the data based on the ID
-  return {
-    id,
-    title: '斗破苍穹年番',
-    coverUrl: 'https://ext.same-assets.com/1324623394/3930992340.jpeg',
-    year: '2022',
-    area: '内地',
-    type: '国产动漫',
-    description: '三年之约后，萧炎终于在迦南学院见到了薰儿，此后他广交挚友并成立磐门；为继续提升实力以三上云岚宗为父复仇，他以身犯险深入天焚炼气塔吞噬陨落心炎……',
-    episodeCount: 141,
-  };
-};
+import { getVideoDetail } from '../api/video';
+import { Video } from '../api/types';
 
 const DetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const videoId = id || '52937'; // Default ID if none provided
-  const videoData = getVideoData(videoId);
+  const [videoData, setVideoData] = useState<Video | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVideoData = async () => {
+      try {
+        const response = await getVideoDetail(id || '');
+        if (response.list && response.list.length > 0) {
+          setVideoData(response.list[0]);
+        }
+      } catch (error) {
+        console.error('获取视频详情失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchVideoData();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <Layout>加载中...</Layout>;
+  }
+
+  if (!videoData) {
+    return <Layout>未找到视频信息</Layout>;
+  }
+
+  // 解析播放地址，获取集数和名称
+  const parsePlayUrl = (playUrl: string) => {
+    if (!playUrl) return { count: 0, names: [] };
+    
+    const episodes = playUrl.split('#');
+    const names = episodes.map(ep => {
+      const parts = ep.split('$');
+      return parts[0] || '';
+    });
+    
+    return {
+      count: episodes.length,
+      names
+    };
+  };
+
+  const { count, names } = parsePlayUrl(videoData.vod_play_url);
 
   return (
     <Layout>
       <VideoDetail
-        id={videoData.id}
-        title={videoData.title}
-        coverUrl={videoData.coverUrl}
-        year={videoData.year}
-        area={videoData.area}
-        type={videoData.type}
-        description={videoData.description}
-        episodeCount={videoData.episodeCount}
+        id={videoData.vod_id.toString()}
+        title={videoData.vod_name}
+        coverUrl={videoData.vod_pic}
+        year={videoData.vod_year}
+        area={videoData.vod_area}
+        type={videoData.type_name}
+        description={videoData.vod_content}
+        episodeCount={count}
+        episodeNames={names}
       />
     </Layout>
   );

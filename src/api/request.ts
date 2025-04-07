@@ -10,9 +10,8 @@ const request = async <T>(endpoint: string, params: Record<string, any> = {}): P
   });
 
   const url = `${API_CONFIG.baseURL}${endpoint}?${queryString.toString()}`;
-  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
   try {
-    const response = await fetch(proxyUrl, {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

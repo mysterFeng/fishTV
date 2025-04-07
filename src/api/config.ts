@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  baseURL: 'https://heimuer.tv/api.php',
+  baseURL: 'https://tv.codebug.icu/heimuer/api.php',
   timeout: 10000,
 };
 

@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import VideoPlayer from '../components/VideoPlayer';
+import { getVideoDetail } from '../api/video';
+import { Video } from '../api/types';
 
 // In a real application, this would come from API or route params
 const sampleVideoData = {
@@ -64,22 +66,52 @@ const relatedContent = [
 ];
 
 const PlayPage = () => {
-  // In a real app, these would be extracted from URL params
   const { id, source, episode } = useParams<{ id: string; source: string; episode: string }>();
+  const [videoData, setVideoData] = useState<Video | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedSource, setSelectedSource] = useState(Number(source || '1'));
+  const [currentEpisode, setCurrentEpisode] = useState(Number(episode || '1'));
 
-  // Use default values if params are undefined
-  const videoId = id || sampleVideoData.id;
-  const videoSource = Number.parseInt(source || '2', 10);
-  const videoEpisode = Number.parseInt(episode || '1', 10);
+  useEffect(() => {
+    const fetchVideoData = async () => {
+      try {
+        const response = await getVideoDetail(id || '');
+        if (response.list && response.list.length > 0) {
+          setVideoData(response.list[0]);
+        }
+      } catch (error) {
+        console.error('获取视频详情失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Sources
-  const sources = [
-    { id: 1, name: '非凡云' },
-    { id: 2, name: '优质云' }
-  ];
+    if (id) {
+      fetchVideoData();
+    }
+  }, [id]);
 
-  // State for selected source
-  const [selectedSource, setSelectedSource] = useState(videoSource);
+  const getPlayUrl = () => {
+    if (!videoData?.vod_play_url) return '';
+    
+    const episodes = videoData.vod_play_url.split('#');
+    const currentEpisodeData = episodes[currentEpisode - 1];
+    if (!currentEpisodeData) return '';
+    
+    const parts = currentEpisodeData.split('$');
+    return parts.length > 1 ? parts[1] : '';
+  };
+
+  if (loading) {
+    return <Layout>加载中...</Layout>;
+  }
+
+  if (!videoData) {
+    return <Layout>未找到视频信息</Layout>;
+  }
+
+  const totalEpisodes = videoData.vod_play_url ? videoData.vod_play_url.split('#').length : 0;
+  const currentVideoUrl = getPlayUrl();
 
   return (
     <Layout>
@@ -88,22 +120,19 @@ const PlayPage = () => {
         <div className="mb-4">
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-gray-800">
-              <Link to={`/detail/${videoId}`} className="hover:text-primary">
-                {sampleVideoData.title}
+              <Link to={`/detail/${id}`} className="hover:text-primary">
+                {videoData.vod_name}
               </Link>
             </h1>
             <div className="flex ml-4 space-x-2">
               <Link to="/list/3.html" className="px-2 py-1 bg-gray-100 text-sm text-gray-700 rounded hover:bg-gray-200">
-                动漫
+                {videoData.type_name}
               </Link>
               <span className="px-2 py-1 bg-gray-100 text-sm text-gray-700 rounded">
-                {sampleVideoData.year}
+                {videoData.vod_year}
               </span>
               <span className="px-2 py-1 bg-gray-100 text-sm text-gray-700 rounded">
-                {sampleVideoData.area}
-              </span>
-              <span className="px-2 py-1 bg-gray-100 text-sm text-gray-700 rounded">
-                {sampleVideoData.type}
+                {videoData.vod_area}
               </span>
             </div>
           </div>
@@ -113,11 +142,12 @@ const PlayPage = () => {
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 bg-black rounded-lg overflow-hidden">
             <VideoPlayer
-              id={videoId}
-              title={sampleVideoData.title}
+              id={id || ''}
+              title={videoData.vod_name}
               source={selectedSource}
-              episode={videoEpisode}
-              totalEpisodes={sampleVideoData.episodeCount}
+              episode={currentEpisode}
+              totalEpisodes={totalEpisodes}
+              videoUrl={currentVideoUrl}
             />
           </div>
 
@@ -127,35 +157,50 @@ const PlayPage = () => {
               <h2 className="text-lg font-semibold">选集播放</h2>
 
               <div className="flex space-x-3">
-                {sources.map((src) => (
-                  <button
-                    key={src.id}
-                    className={`px-4 py-1 rounded-full transition-colors ${
-                      selectedSource === src.id
-                        ? 'bg-primary text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                    onClick={() => setSelectedSource(src.id)}
-                  >
-                    {src.name}
-                  </button>
-                ))}
+                <button
+                  className={`px-4 py-1 rounded-full transition-colors ${
+                    selectedSource === 1
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setSelectedSource(1)}
+                >
+                  黑木耳
+                </button>
+                <button
+                  className={`px-4 py-1 rounded-full transition-colors ${
+                    selectedSource === 2
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  onClick={() => setSelectedSource(2)}
+                >
+                  优质云
+                </button>
               </div>
             </div>
 
             {/* Episodes grid */}
             <div className="grid grid-cols-3 gap-2 max-h-[400px] overflow-y-auto">
-              {Array.from({ length: sampleVideoData.episodeCount }, (_, i) => i + 1).map((ep) => (
-                <Link
-                  key={ep}
-                  to={`/play/${videoId}-${selectedSource}-${ep}`}
-                  className={`py-2 text-center border rounded hover:border-primary transition-colors ${
-                    ep === videoEpisode ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-700'
-                  }`}
-                >
-                  {ep === 1 ? '第01集' : `第${ep.toString().padStart(2, '0')}集`}
-                </Link>
-              ))}
+              {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map((ep) => {
+                // 解析播放地址，获取集数名称
+                const episodeNames = videoData.vod_play_url.split('#').map(ep => {
+                  const parts = ep.split('$');
+                  return parts[0] || '';
+                });
+                
+                return (
+                  <Link
+                    key={ep}
+                    to={`/play/${id}-${selectedSource}-${ep}`}
+                    className={`py-2 text-center border rounded hover:border-primary transition-colors ${
+                      ep === currentEpisode ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-700'
+                    }`}
+                  >
+                    {episodeNames[ep - 1] || `第${ep.toString().padStart(2, '0')}集`}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
