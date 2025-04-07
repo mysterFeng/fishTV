@@ -165,7 +165,7 @@ const PlayPage = () => {
                   }`}
                   onClick={() => setSelectedSource(1)}
                 >
-                  黑木耳
+                  黑木耳1
                 </button>
                 <button
                   className={`px-4 py-1 rounded-full transition-colors ${
@@ -190,15 +190,15 @@ const PlayPage = () => {
                 });
                 
                 return (
-                  <Link
+                  <button
                     key={ep}
-                    to={`/play/${id}-${selectedSource}-${ep}`}
+                    onClick={() => setCurrentEpisode(ep)}
                     className={`py-2 text-center border rounded hover:border-primary transition-colors ${
                       ep === currentEpisode ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-700'
                     }`}
                   >
                     {episodeNames[ep - 1] || `第${ep.toString().padStart(2, '0')}集`}
-                  </Link>
+                  </button>
                 );
               })}
             </div>
