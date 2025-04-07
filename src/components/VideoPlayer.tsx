@@ -21,19 +21,6 @@ const VideoPlayer = ({
   const [showPublicNotice, setShowPublicNotice] = useState(true);
   const playerRef = useRef<HTMLDivElement>(null);
 
-  // Handle previous and next episode navigation
-  const goToPreviousEpisode = () => {
-    if (episode > 1) {
-      window.location.href = `/play/${id}-${source}-${episode - 1}`;
-    }
-  };
-
-  const goToNextEpisode = () => {
-    if (episode < totalEpisodes) {
-      window.location.href = `/play/${id}-${source}-${episode + 1}`;
-    }
-  };
-
   // Handle fullscreen toggle
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -87,42 +74,6 @@ const VideoPlayer = ({
           </div>
         </div>
       )}
-
-      {/* Player Controls */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={goToPreviousEpisode}
-            disabled={episode <= 1}
-            className={`text-white ${episode <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:text-primary'}`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
-            </svg>
-          </button>
-          <span className="text-white text-sm">
-            {episode} / {totalEpisodes}
-          </span>
-          <button
-            onClick={goToNextEpisode}
-            disabled={episode >= totalEpisodes}
-            className={`text-white ${episode >= totalEpisodes ? 'opacity-50 cursor-not-allowed' : 'hover:text-primary'}`}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-
-        <button
-          onClick={toggleFullscreen}
-          className="text-white hover:text-primary"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-          </svg>
-        </button>
-      </div>
     </div>
   );
 };
