@@ -5,6 +5,7 @@ import Banner from './components/Banner';
 import ContentSection from './components/ContentSection';
 import DetailPage from './pages/DetailPage';
 import PlayPage from './pages/PlayPage';
+import SearchResultsPage from './pages/SearchResultsPage';
 import { bannerData, trendingContent, tvContent, animeContent } from './data/sampleData';
 import { getVideoList } from './api/video';
 import { Video } from './api/types';
@@ -118,6 +119,7 @@ function App() {
         <Route path="/detail/:id" element={<DetailPage />} />
         {/* Update the path pattern to match FreeOK's URL structure */}
         <Route path="/play/:id" element={<PlayPage />} />
+        <Route path="/search" element={<SearchResultsPage />} />
       </Routes>
     </Router>
   );
