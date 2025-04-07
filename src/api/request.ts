@@ -1,0 +1,34 @@
+import { API_CONFIG } from './config';
+import { ApiResponse } from './types';
+
+const request = async <T>(endpoint: string, params: Record<string, any> = {}): Promise<ApiResponse<T>> => {
+  const queryString = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      queryString.append(key, String(value));
+    }
+  });
+
+  const url = `${API_CONFIG.baseURL}${endpoint}?${queryString.toString()}`;
+  const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+  try {
+    const response = await fetch(proxyUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data as ApiResponse<T>;
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
+  }
+};
+
+export default request; 

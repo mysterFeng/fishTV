@@ -1,9 +1,9 @@
 import type { ContentItem } from '../components/ContentSection';
 
 export const bannerData = {
-  title: "仙逆",
-  imageUrl: "https://ext.same-assets.com/2082338631/3313673689.jpeg",
-  description: "在这个世界上，有着各种各样的传承，有的是医术传承，有的是炼丹传承，有的传承修士神通，有的传承功法秘术..."
+  title: "摸鱼TV 欢迎你～",
+  imageUrl: "https://b0.bdstatic.com/c4cf37b3294a14f89f0f490ff953cafa.jpg@h_1280",
+  description: "大家好，我是摸鱼TV，欢迎来到我的世界！"
 };
 
 export const trendingContent: ContentItem[] = [
