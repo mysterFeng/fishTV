@@ -180,18 +180,18 @@ const PlayPage = () => {
                   }`}
                   onClick={() => setSelectedSource(1)}
                 >
-                  黑木耳1
+                  摸鱼☁️
                 </button>
-                <button
-                  className={`px-4 py-1 rounded-full transition-colors ${
-                    selectedSource === 2
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  onClick={() => setSelectedSource(2)}
-                >
-                  优质云
-                </button>
+                {/*<button*/}
+                {/*  className={`px-4 py-1 rounded-full transition-colors ${*/}
+                {/*    selectedSource === 2*/}
+                {/*      ? 'bg-primary text-white'*/}
+                {/*      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'*/}
+                {/*  }`}*/}
+                {/*  onClick={() => setSelectedSource(2)}*/}
+                {/*>*/}
+                {/*  优质云*/}
+                {/*</button>*/}
               </div>
             </div>
 

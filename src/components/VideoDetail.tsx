@@ -97,14 +97,14 @@ const VideoDetail = ({
               className={`px-4 py-1 rounded-full ${selectedSource === 1 ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'}`}
               onClick={() => setSelectedSource(1)}
             >
-              黑木耳
+              摸鱼☁️
             </button>
-            <button
-              className={`px-4 py-1 rounded-full ${selectedSource === 2 ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'}`}
-              onClick={() => setSelectedSource(2)}
-            >
-              优质云
-            </button>
+            {/*<button*/}
+            {/*  className={`px-4 py-1 rounded-full ${selectedSource === 2 ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'}`}*/}
+            {/*  onClick={() => setSelectedSource(2)}*/}
+            {/*>*/}
+            {/*  优质云*/}
+            {/*</button>*/}
           </div>
         </div>
 
