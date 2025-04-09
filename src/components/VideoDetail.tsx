@@ -113,7 +113,7 @@ const VideoDetail = ({
           {episodes.map((episode, index) => (
             <Link
               key={episode}
-              to={`/play/${id}-${selectedSource}-${episode}`}
+              to={`/play/${id}/${episode}`}
               className={`py-2 px-1 text-center border rounded hover:border-primary transition-colors ${
                 episode === currentEpisode ? 'border-primary text-primary' : 'border-gray-200 text-gray-700'
               }`}

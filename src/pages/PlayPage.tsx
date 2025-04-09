@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import VideoPlayer from '../components/VideoPlayer';
 import { getVideoDetail } from '../api/video';
@@ -66,10 +66,11 @@ const relatedContent = [
 ];
 
 const PlayPage = () => {
-  const { id, source, episode } = useParams<{ id: string; source: string; episode: string }>();
+  const { id, episode } = useParams<{ id: string; episode: string }>();
+  const navigate = useNavigate();
   const [videoData, setVideoData] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSource, setSelectedSource] = useState(Number(source || '1'));
+  const [selectedSource, setSelectedSource] = useState(1);
   const [currentEpisode, setCurrentEpisode] = useState(Number(episode || '1'));
 
   useEffect(() => {
@@ -100,6 +101,11 @@ const PlayPage = () => {
     
     const parts = currentEpisodeData.split('$');
     return parts.length > 1 ? parts[1] : '';
+  };
+
+  const handleEpisodeChange = (ep: number) => {
+    setCurrentEpisode(ep);
+    navigate(`/play/${id}/${ep}`);
   };
 
   if (loading) {
@@ -192,7 +198,7 @@ const PlayPage = () => {
                 return (
                   <button
                     key={ep}
-                    onClick={() => setCurrentEpisode(ep)}
+                    onClick={() => handleEpisodeChange(ep)}
                     className={`py-2 text-center border rounded hover:border-primary transition-colors ${
                       ep === currentEpisode ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-700'
                     }`}

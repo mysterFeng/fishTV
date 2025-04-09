@@ -118,7 +118,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/detail/:id" element={<DetailPage />} />
         {/* Update the path pattern to match FreeOK's URL structure */}
-        <Route path="/play/:id" element={<PlayPage />} />
+        <Route path="/play/:id/:episode?" element={<PlayPage />} />
         <Route path="/search" element={<SearchResultsPage />} />
       </Routes>
     </Router>
