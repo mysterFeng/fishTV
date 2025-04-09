@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import VideoPlayer from '../components/VideoPlayer';
+import LoadingState from '../components/LoadingState';
 import { getVideoDetail } from '../api/video';
 import { Video } from '../api/types';
 
@@ -109,11 +110,19 @@ const PlayPage = () => {
   };
 
   if (loading) {
-    return <Layout>加载中...</Layout>;
+    return (
+      <Layout>
+        <LoadingState type="loading" message="正在加载视频信息..." />
+      </Layout>
+    );
   }
 
   if (!videoData) {
-    return <Layout>未找到视频信息</Layout>;
+    return (
+      <Layout>
+        <LoadingState type="error" message="未找到视频信息，请检查视频ID是否正确" />
+      </Layout>
+    );
   }
 
   const totalEpisodes = videoData.vod_play_url ? videoData.vod_play_url.split('#').length : 0;

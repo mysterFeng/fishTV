@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import VideoDetail from '../components/VideoDetail';
+import LoadingState from '../components/LoadingState';
 import { getVideoDetail } from '../api/video';
 import { Video } from '../api/types';
 
@@ -30,11 +31,19 @@ const DetailPage = () => {
   }, [id]);
 
   if (loading) {
-    return <Layout>加载中...</Layout>;
+    return (
+      <Layout>
+        <LoadingState type="loading" message="正在加载视频详情..." />
+      </Layout>
+    );
   }
 
   if (!videoData) {
-    return <Layout>未找到视频信息</Layout>;
+    return (
+      <Layout>
+        <LoadingState type="error" message="未找到视频详情，请检查视频ID是否正确" />
+      </Layout>
+    );
   }
 
   // 解析播放地址，获取集数和名称
