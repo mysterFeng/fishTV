@@ -42,7 +42,7 @@ const VideoPlayer = ({
       {/* Video Player */}
       <div className="w-full relative pb-[56.25%] bg-black">
         <iframe
-          src={`https://hoplayer.com/index.html?url=${videoUrl}&autoplay=true`}
+          src={`${videoUrl.includes("m3u")?'https://hoplayer.com/index.html?url=${videoUrl}&autoplay=true':videoUrl}`}
           style={{
             position: 'absolute',
             top: 0,

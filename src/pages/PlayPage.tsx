@@ -4,7 +4,7 @@ import { useHistory } from '../context/HistoryContext';
 import Layout from '../components/Layout';
 import VideoPlayer from '../components/VideoPlayer';
 import VideoPlayerSkeleton from '../components/VideoPlayerSkeleton';
-import { getVideoDetail } from '../api/video';
+import { getVideoDetail, searchVideo } from '../api/video';
 import { Video } from '../api/types';
 import { VIDEO_SOURCES } from '../api/config';
 
@@ -80,19 +80,34 @@ const PlayPage = () => {
   // 获取视频详情的函数
   const fetchVideo = async (source: keyof typeof VIDEO_SOURCES) => {
     try {
-      const response = await getVideoDetail(id || '', VIDEO_SOURCES[source].url);
-      if (response.list && response.list.length > 0) {
-        const videoData = response.list[0];
-        setVideo(videoData);
-        
-        // 记录观看历史
-        addToHistory({
-          id: videoData.vod_id.toString(),
-          title: videoData.vod_name,
-          imageUrl: videoData.vod_pic,
-          episode: episode || '1',
-          lastWatched: new Date()
-        });
+      // 如果是初始加载，使用 ID 获取详情
+      if (source === 'moyu' && id) {
+        const response = await getVideoDetail(id, VIDEO_SOURCES[source].url);
+        if (response.list && response.list.length > 0) {
+          const videoData = response.list[0];
+          setVideo(videoData);
+          addToHistory({
+            id: videoData.vod_id.toString(),
+            title: videoData.vod_name,
+            imageUrl: videoData.vod_pic,
+            episode: episode || '1',
+            lastWatched: new Date()
+          });
+        }
+      } else if (video?.vod_name) {
+        // 如果是切换数据源，使用标题搜索
+        const response = await searchVideo(video.vod_name, VIDEO_SOURCES[source].url);
+        if (response.list && response.list.length > 0) {
+          const videoData = response.list[0];
+          setVideo(videoData);
+          addToHistory({
+            id: videoData.vod_id.toString(),
+            title: videoData.vod_name,
+            imageUrl: videoData.vod_pic,
+            episode: episode || '1',
+            lastWatched: new Date()
+          });
+        }
       }
     } catch (error) {
       console.error('获取视频详情失败:', error);
