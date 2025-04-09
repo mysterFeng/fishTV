@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useHistory } from '../context/HistoryContext';
 import Layout from '../components/Layout';
 import VideoPlayer from '../components/VideoPlayer';
 import VideoPlayerSkeleton from '../components/VideoPlayerSkeleton';
@@ -67,19 +68,30 @@ const relatedContent = [
 ];
 
 const PlayPage = () => {
-  const { id, episode } = useParams<{ id: string; episode: string }>();
+  const { id, episode } = useParams<{ id: string; episode?: string }>();
   const navigate = useNavigate();
-  const [videoData, setVideoData] = useState<Video | null>(null);
+  const { addToHistory } = useHistory();
+  const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSource, setSelectedSource] = useState(1);
   const [currentEpisode, setCurrentEpisode] = useState(Number(episode || '1'));
 
   useEffect(() => {
-    const fetchVideoData = async () => {
+    const fetchVideo = async () => {
       try {
         const response = await getVideoDetail(id || '');
         if (response.list && response.list.length > 0) {
-          setVideoData(response.list[0]);
+          const videoData = response.list[0];
+          setVideo(videoData);
+          
+          // 记录观看历史
+          addToHistory({
+            id: videoData.vod_id.toString(),
+            title: videoData.vod_name,
+            imageUrl: videoData.vod_pic,
+            episode: episode || '1',
+            lastWatched: new Date()
+          });
         }
       } catch (error) {
         console.error('获取视频详情失败:', error);
@@ -89,14 +101,14 @@ const PlayPage = () => {
     };
 
     if (id) {
-      fetchVideoData();
+      fetchVideo();
     }
-  }, [id]);
+  }, [id, episode, addToHistory]);
 
   const getPlayUrl = () => {
-    if (!videoData?.vod_play_url) return '';
+    if (!video?.vod_play_url) return '';
     
-    const episodes = videoData.vod_play_url.split('#');
+    const episodes = video.vod_play_url.split('#');
     const currentEpisodeData = episodes[currentEpisode - 1];
     if (!currentEpisodeData) return '';
     
@@ -117,7 +129,7 @@ const PlayPage = () => {
     );
   }
 
-  if (!videoData) {
+  if (!video) {
     return (
       <Layout>
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
@@ -135,7 +147,7 @@ const PlayPage = () => {
     );
   }
 
-  const totalEpisodes = videoData.vod_play_url ? videoData.vod_play_url.split('#').length : 0;
+  const totalEpisodes = video.vod_play_url ? video.vod_play_url.split('#').length : 0;
   const currentVideoUrl = getPlayUrl();
 
   return (
@@ -146,18 +158,18 @@ const PlayPage = () => {
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-gray-800">
               <Link to={`/detail/${id}`} className="hover:text-primary">
-                {videoData.vod_name}
+                {video.vod_name}
               </Link>
             </h1>
             <div className="flex ml-4 space-x-2">
               <Link to="/list/3.html" className="px-2 py-1 bg-gray-100 text-sm text-gray-700 rounded hover:bg-gray-200">
-                {videoData.type_name}
+                {video.type_name}
               </Link>
               <span className="px-2 py-1 bg-gray-100 text-sm text-gray-700 rounded">
-                {videoData.vod_year}
+                {video.vod_year}
               </span>
               <span className="px-2 py-1 bg-gray-100 text-sm text-gray-700 rounded">
-                {videoData.vod_area}
+                {video.vod_area}
               </span>
             </div>
           </div>
@@ -168,7 +180,7 @@ const PlayPage = () => {
           <div className="flex-1 bg-black rounded-lg overflow-hidden">
             <VideoPlayer
               id={id || ''}
-              title={videoData.vod_name}
+              title={video.vod_name}
               source={selectedSource}
               episode={currentEpisode}
               totalEpisodes={totalEpisodes}
@@ -209,7 +221,7 @@ const PlayPage = () => {
             <div className="grid grid-cols-3 gap-2 max-h-[400px] overflow-y-auto">
               {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map((ep) => {
                 // 解析播放地址，获取集数名称
-                const episodeNames = videoData.vod_play_url.split('#').map(ep => {
+                const episodeNames = video.vod_play_url.split('#').map(ep => {
                   const parts = ep.split('$');
                   return parts[0] || '';
                 });

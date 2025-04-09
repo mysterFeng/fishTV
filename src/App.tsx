@@ -6,6 +6,8 @@ import ContentSection from './components/ContentSection';
 import DetailPage from './pages/DetailPage';
 import PlayPage from './pages/PlayPage';
 import SearchResultsPage from './pages/SearchResultsPage';
+import HistoryPage from './pages/HistoryPage';
+import { HistoryProvider } from './context/HistoryContext';
 import { bannerData, trendingContent, tvContent, animeContent } from './data/sampleData';
 import { getVideoList } from './api/video';
 import { Video } from './api/types';
@@ -113,19 +115,21 @@ const HomePage = () => {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/detail/:id" element={<DetailPage />} />
-        {/* Update the path pattern to match FreeOK's URL structure */}
-        <Route path="/play/:id/:episode?" element={<PlayPage />} />
-        <Route path="/search" element={<SearchResultsPage />} />
-        <Route path="/movies" element={<HomePage />} />
-        <Route path="/tv" element={<HomePage />} />
-        <Route path="/anime" element={<HomePage />} />
-        <Route path="/variety" element={<HomePage />} />
-      </Routes>
-    </Router>
+    <HistoryProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/detail/:id" element={<DetailPage />} />
+          <Route path="/play/:id/:episode?" element={<PlayPage />} />
+          <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/history" element={<HistoryPage />} />
+          <Route path="/movies" element={<HomePage />} />
+          <Route path="/tv" element={<HomePage />} />
+          <Route path="/anime" element={<HomePage />} />
+          <Route path="/variety" element={<HomePage />} />
+        </Routes>
+      </Router>
+    </HistoryProvider>
   );
 }
 

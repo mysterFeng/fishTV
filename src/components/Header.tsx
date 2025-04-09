@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useHistory } from '../context/HistoryContext';
 
 const Header = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
   const navigate = useNavigate();
+  const { history } = useHistory();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +37,66 @@ const Header = () => {
         </form>
       </div>
       <div className="flex items-center ml-4">
-        <button className="text-gray-500 hover:text-gray-700 mx-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-          </svg>
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowHistory(!showHistory)}
+            className="text-gray-500 hover:text-gray-700 mx-2 relative"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {history.length > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                {history.length}
+              </span>
+            )}
+          </button>
+          
+          {showHistory && (
+            <div className="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg z-50">
+              <div className="p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-medium">最近观看</h3>
+                  <Link 
+                    to="/history" 
+                    className="text-sm text-primary hover:underline"
+                    onClick={() => setShowHistory(false)}
+                  >
+                    查看全部
+                  </Link>
+                </div>
+                {history.length === 0 ? (
+                  <p className="text-gray-500 text-sm">暂无观看历史</p>
+                ) : (
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {history.slice(0, 5).map((item) => (
+                      <Link
+                        key={item.id}
+                        to={`/play/${item.id}/${item.episode || '1'}`}
+                        className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-md"
+                        onClick={() => setShowHistory(false)}
+                      >
+                        <div className="w-16 h-9 rounded overflow-hidden">
+                          <img
+                            src={item.imageUrl}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{item.title}</p>
+                          {item.episode && (
+                            <p className="text-xs text-gray-500">看到第 {item.episode} 集</p>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
         <button className="text-gray-500 hover:text-gray-700 mx-2">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
