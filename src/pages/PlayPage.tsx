@@ -226,16 +226,24 @@ const PlayPage = () => {
                   return parts[0] || '';
                 });
                 
+                const episodeName = episodeNames[ep - 1] || `第${ep.toString().padStart(2, '0')}集`;
+                
                 return (
-                  <button
-                    key={ep}
-                    onClick={() => handleEpisodeChange(ep)}
-                    className={`py-2 text-center border rounded hover:border-primary transition-colors ${
-                      ep === currentEpisode ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-700'
-                    }`}
-                  >
-                    {episodeNames[ep - 1] || `第${ep.toString().padStart(2, '0')}集`}
-                  </button>
+                  <div key={ep} className="relative group">
+                    <button
+                      onClick={() => handleEpisodeChange(ep)}
+                      className={`w-full py-2 text-center border rounded hover:border-primary transition-colors ${
+                        ep === currentEpisode ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-700'
+                      }`}
+                    >
+                      <span className="block truncate px-1">
+                        {episodeName}
+                      </span>
+                    </button>
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                      {episodeName}
+                    </div>
+                  </div>
                 );
               })}
             </div>
