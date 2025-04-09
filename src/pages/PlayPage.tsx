@@ -204,48 +204,41 @@ const PlayPage = () => {
                 >
                   摸鱼☁️
                 </button>
-                {/*<button*/}
-                {/*  className={`px-4 py-1 rounded-full transition-colors ${*/}
-                {/*    selectedSource === 2*/}
-                {/*      ? 'bg-primary text-white'*/}
-                {/*      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'*/}
-                {/*  }`}*/}
-                {/*  onClick={() => setSelectedSource(2)}*/}
-                {/*>*/}
-                {/*  优质云*/}
-                {/*</button>*/}
               </div>
             </div>
 
             {/* Episodes grid */}
-            <div className="grid grid-cols-3 gap-2 max-h-[400px] overflow-y-auto">
-              {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map((ep) => {
-                // 解析播放地址，获取集数名称
-                const episodeNames = video.vod_play_url.split('#').map(ep => {
-                  const parts = ep.split('$');
-                  return parts[0] || '';
-                });
-                
-                const episodeName = episodeNames[ep - 1] || `第${ep.toString().padStart(2, '0')}集`;
-                
-                return (
-                  <div key={ep} className="relative group">
-                    <button
-                      onClick={() => handleEpisodeChange(ep)}
-                      className={`w-full py-2 text-center border rounded hover:border-primary transition-colors ${
-                        ep === currentEpisode ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-700'
-                      }`}
-                    >
-                      <span className="block truncate px-1">
+            <div className="relative">
+              <div className="grid grid-cols-3 gap-2 max-h-[400px] overflow-y-auto overflow-x-hidden">
+                {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map((ep) => {
+                  // 解析播放地址，获取集数名称
+                  const episodeNames = video.vod_play_url.split('#').map(ep => {
+                    const parts = ep.split('$');
+                    return parts[0] || '';
+                  });
+                  
+                  const episodeName = episodeNames[ep - 1] || `第${ep.toString().padStart(2, '0')}集`;
+                  
+                  return (
+                    <div key={ep} className="relative group">
+                      <button
+                        onClick={() => handleEpisodeChange(ep)}
+                        className={`w-full py-2 text-center border rounded hover:border-primary transition-colors ${
+                          ep === currentEpisode ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-700'
+                        }`}
+                      >
+                        <span className="block truncate px-1">
+                          {episodeName}
+                        </span>
+                      </button>
+                      <div className="absolute left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none
+                        top-full mt-2 group-hover:block hidden">
                         {episodeName}
-                      </span>
-                    </button>
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                      {episodeName}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
