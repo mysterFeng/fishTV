@@ -20,9 +20,9 @@ export const getVideoList = async (params: VideoListParams = {}) => {
   });
 };
 
-export const getVideoDetail = async (id: string) => {
+export const getVideoDetail = async (id: string, baseURL?: string) => {
   return request<Video>('/provide/vod/', {
     ac: 'detail',
     ids: id,
-  });
+  }, baseURL);
 }; 

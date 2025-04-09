@@ -6,6 +6,7 @@ import VideoPlayer from '../components/VideoPlayer';
 import VideoPlayerSkeleton from '../components/VideoPlayerSkeleton';
 import { getVideoDetail } from '../api/video';
 import { Video } from '../api/types';
+import { VIDEO_SOURCES } from '../api/config';
 
 // In a real application, this would come from API or route params
 const sampleVideoData = {
@@ -73,37 +74,46 @@ const PlayPage = () => {
   const { addToHistory } = useHistory();
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSource, setSelectedSource] = useState(1);
+  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>('moyu');
   const [currentEpisode, setCurrentEpisode] = useState(Number(episode || '1'));
 
-  useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        const response = await getVideoDetail(id || '');
-        if (response.list && response.list.length > 0) {
-          const videoData = response.list[0];
-          setVideo(videoData);
-          
-          // 记录观看历史
-          addToHistory({
-            id: videoData.vod_id.toString(),
-            title: videoData.vod_name,
-            imageUrl: videoData.vod_pic,
-            episode: episode || '1',
-            lastWatched: new Date()
-          });
-        }
-      } catch (error) {
-        console.error('获取视频详情失败:', error);
-      } finally {
-        setLoading(false);
+  // 获取视频详情的函数
+  const fetchVideo = async (source: keyof typeof VIDEO_SOURCES) => {
+    try {
+      const response = await getVideoDetail(id || '', VIDEO_SOURCES[source].url);
+      if (response.list && response.list.length > 0) {
+        const videoData = response.list[0];
+        setVideo(videoData);
+        
+        // 记录观看历史
+        addToHistory({
+          id: videoData.vod_id.toString(),
+          title: videoData.vod_name,
+          imageUrl: videoData.vod_pic,
+          episode: episode || '1',
+          lastWatched: new Date()
+        });
       }
-    };
-
-    if (id) {
-      fetchVideo();
+    } catch (error) {
+      console.error('获取视频详情失败:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [id, episode, addToHistory]);
+  };
+
+  // 初始加载和 ID 变化时获取视频详情
+  useEffect(() => {
+    if (id) {
+      fetchVideo(selectedSource);
+    }
+  }, [id, episode]);
+
+  // 处理视频源切换
+  const handleSourceChange = (source: keyof typeof VIDEO_SOURCES) => {
+    setSelectedSource(source);
+    setLoading(true);
+    fetchVideo(source);
+  };
 
   const getPlayUrl = () => {
     if (!video?.vod_play_url) return '';
@@ -194,16 +204,19 @@ const PlayPage = () => {
               <h2 className="text-lg font-semibold">选集播放</h2>
 
               <div className="flex space-x-3">
-                <button
-                  className={`px-4 py-1 rounded-full transition-colors ${
-                    selectedSource === 1
-                      ? 'bg-primary text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                  onClick={() => setSelectedSource(1)}
-                >
-                  摸鱼☁️
-                </button>
+                {Object.entries(VIDEO_SOURCES).map(([key, source]) => (
+                  <button
+                    key={key}
+                    className={`px-4 py-1 rounded-full transition-colors ${
+                      selectedSource === key
+                        ? 'bg-primary text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                    onClick={() => handleSourceChange(key as keyof typeof VIDEO_SOURCES)}
+                  >
+                    {source.name}
+                  </button>
+                ))}
               </div>
             </div>
 

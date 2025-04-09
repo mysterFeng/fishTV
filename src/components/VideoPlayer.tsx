@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 interface VideoPlayerProps {
   id: string;
   title: string;
-  source: number;
+  source: string;
   episode: number;
   totalEpisodes: number;
   videoUrl: string;

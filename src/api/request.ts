@@ -1,7 +1,7 @@
 import { API_CONFIG } from './config';
 import { ApiResponse } from './types';
 
-const request = async <T>(endpoint: string, params: Record<string, any> = {}): Promise<ApiResponse<T>> => {
+const request = async <T>(endpoint: string, params: Record<string, any> = {}, baseURL?: string): Promise<ApiResponse<T>> => {
   const queryString = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
@@ -9,7 +9,7 @@ const request = async <T>(endpoint: string, params: Record<string, any> = {}): P
     }
   });
 
-  const url = `${API_CONFIG.baseURL}${endpoint}?${queryString.toString()}`;
+  const url = `${baseURL || API_CONFIG.baseURL}${endpoint}?${queryString.toString()}`;
   try {
     const response = await fetch(url, {
       method: 'GET',
