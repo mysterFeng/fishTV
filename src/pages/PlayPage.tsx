@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import VideoPlayer from '../components/VideoPlayer';
-import LoadingState from '../components/LoadingState';
+import VideoPlayerSkeleton from '../components/VideoPlayerSkeleton';
 import { getVideoDetail } from '../api/video';
 import { Video } from '../api/types';
 
@@ -112,7 +112,7 @@ const PlayPage = () => {
   if (loading) {
     return (
       <Layout>
-        <LoadingState type="loading" message="正在加载视频信息..." />
+        <VideoPlayerSkeleton />
       </Layout>
     );
   }
@@ -120,7 +120,17 @@ const PlayPage = () => {
   if (!videoData) {
     return (
       <Layout>
-        <LoadingState type="error" message="未找到视频信息，请检查视频ID是否正确" />
+        <div className="min-h-[60vh] flex flex-col items-center justify-center">
+          <div className="bg-red-50 p-8 rounded-lg max-w-md w-full text-center">
+            <div className="w-16 h-16 mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-full text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold text-red-700 mb-2">出错了</h3>
+            <p className="text-gray-600">未找到视频信息，请检查视频ID是否正确</p>
+          </div>
+        </div>
       </Layout>
     );
   }

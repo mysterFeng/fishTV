@@ -120,6 +120,10 @@ function App() {
         {/* Update the path pattern to match FreeOK's URL structure */}
         <Route path="/play/:id/:episode?" element={<PlayPage />} />
         <Route path="/search" element={<SearchResultsPage />} />
+        <Route path="/movies" element={<HomePage />} />
+        <Route path="/tv" element={<HomePage />} />
+        <Route path="/anime" element={<HomePage />} />
+        <Route path="/variety" element={<HomePage />} />
       </Routes>
     </Router>
   );

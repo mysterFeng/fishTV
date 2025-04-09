@@ -16,10 +16,10 @@ const Sidebar = () => {
   // Menu items based on the website
   const menuItems = [
     { id: 1, name: '首页', icon: HiHome, link: '/' },
-    // { id: 2, name: '电影', icon: HiFilm, link: '/movies' },
-    // { id: 3, name: '电视剧', icon: HiDesktopComputer, link: '/tv' },
-    // { id: 4, name: '动漫', icon: HiSparkles, link: '/anime' },
-    // { id: 5, name: '综艺', icon: HiStar, link: '/variety' },
+    { id: 2, name: '电影', icon: HiFilm, link: '/movies' },
+    { id: 3, name: '电视剧', icon: HiDesktopComputer, link: '/tv' },
+    { id: 4, name: '动漫', icon: HiSparkles, link: '/anime' },
+    { id: 5, name: '综艺', icon: HiStar, link: '/variety' },
   ];
 
   return (
