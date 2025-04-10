@@ -136,15 +136,17 @@ const PlayPage = () => {
   const handleSourceChange = async (source: keyof typeof VIDEO_SOURCES) => {
     setSelectedSource(source);
     setLoading(true);
-    
+    console.log(video?.vod_name)
     try {
-      // 使用当前视频标题搜索新数据源中的视频
+      // 使用当前视频标题搜索新数据源中的视频，只取空格前的部分
       if (video?.vod_name) {
-        const response = await searchVideo(video.vod_name, VIDEO_SOURCES[source].url);
+        const searchKeyword = video.vod_name.split(' ')[0].split('　')[0]; // 处理普通空格和全角空格
+        const response = await searchVideo(searchKeyword, VIDEO_SOURCES[source].url);
         if (response.list && response.list.length > 0) {
           const newVideo = response.list[0];
           setVideo(newVideo);
-          // 更新 URL 以包含新的数据源和视频 ID
+
+          // 更新 URL 以包含新的数据源
           navigate(`/play/${newVideo.vod_id}/${currentEpisode}/${source}`, { replace: true });
           addToHistory({
             id: newVideo.vod_id.toString(),
@@ -158,6 +160,8 @@ const PlayPage = () => {
       }
     } catch (error) {
       console.error('切换数据源失败:', error);
+      // 如果切换失败，恢复原来的数据源
+      setSelectedSource(selectedSource);
     } finally {
       setLoading(false);
     }
@@ -306,51 +310,51 @@ const PlayPage = () => {
         </div>
 
         {/* Related recommendations */}
-        <div className="mb-6">
-          <h2 className="text-xl font-bold mb-4">相关推荐</h2>
+        {/*<div className="mb-6">*/}
+        {/*  <h2 className="text-xl font-bold mb-4">相关推荐</h2>*/}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {relatedContent.map((item) => (
-              <Link to={`/detail/${item.id}`} key={item.id} className="block">
-                <div className="content-card relative bg-white rounded-md overflow-hidden shadow-sm">
-                  <div className="relative pb-[140%]">
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
+        {/*  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">*/}
+        {/*    {relatedContent.map((item) => (*/}
+        {/*      <Link to={`/detail/${item.id}`} key={item.id} className="block">*/}
+        {/*        <div className="content-card relative bg-white rounded-md overflow-hidden shadow-sm">*/}
+        {/*          <div className="relative pb-[140%]">*/}
+        {/*            <img*/}
+        {/*              src={item.imageUrl}*/}
+        {/*              alt={item.title}*/}
+        {/*              className="absolute inset-0 w-full h-full object-cover"*/}
+        {/*            />*/}
 
-                    {/* Rating badge */}
-                    <div className="absolute top-1 left-1 rating-badge">
-                      {item.rating}
-                    </div>
+        {/*            /!* Rating badge *!/*/}
+        {/*            <div className="absolute top-1 left-1 rating-badge">*/}
+        {/*              {item.rating}*/}
+        {/*            </div>*/}
 
-                    {/* Episode count */}
-                    <div className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs px-1 py-0.5 rounded">
-                      更新至{item.episodeCount}集
-                    </div>
+        {/*            /!* Episode count *!/*/}
+        {/*            <div className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs px-1 py-0.5 rounded">*/}
+        {/*              更新至{item.episodeCount}集*/}
+        {/*            </div>*/}
 
-                    {/* Play button overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black bg-opacity-40">
-                      <div className="play-icon p-2 rounded-full bg-white bg-opacity-80">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+        {/*            /!* Play button overlay *!/*/}
+        {/*            <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black bg-opacity-40">*/}
+        {/*              <div className="play-icon p-2 rounded-full bg-white bg-opacity-80">*/}
+        {/*                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">*/}
+        {/*                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />*/}
+        {/*                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />*/}
+        {/*                </svg>*/}
+        {/*              </div>*/}
+        {/*            </div>*/}
+        {/*          </div>*/}
 
-                  <div className="p-2">
-                    <h3 className="text-sm font-medium line-clamp-1" title={item.title}>
-                      {item.title}
-                    </h3>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/*          <div className="p-2">*/}
+        {/*            <h3 className="text-sm font-medium line-clamp-1" title={item.title}>*/}
+        {/*              {item.title}*/}
+        {/*            </h3>*/}
+        {/*          </div>*/}
+        {/*        </div>*/}
+        {/*      </Link>*/}
+        {/*    ))}*/}
+        {/*  </div>*/}
+        {/*</div>*/}
       </div>
     </Layout>
   );

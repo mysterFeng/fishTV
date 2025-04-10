@@ -1,5 +1,28 @@
-import React, {useState, useRef} from 'react';
-import {Link} from 'react-router-dom';
+import React, {useState, useRef, useEffect} from 'react';
+import DPlayer from 'dplayer';
+import Hls from 'hls.js';
+
+// 添加自定义样式
+const styles = `
+    .dplayer {
+        height: 600px !important;
+    }
+    .dplayer-video {
+        height: 600px !important;
+        object-fit: contain !important;
+    }
+    .dplayer-video-current {
+        height: 600px !important;
+        object-fit: contain !important;
+    }
+    .dplayer-video-wrap {
+        height: 600px !important;
+    }
+    .dplayer-controller {
+        position: absolute !important;
+        bottom: 0 !important;
+    }
+`;
 
 interface VideoPlayerProps {
     id: string;
@@ -20,6 +43,54 @@ const VideoPlayer = ({
                      }: VideoPlayerProps) => {
     const [showPublicNotice, setShowPublicNotice] = useState(true);
     const playerRef = useRef<HTMLDivElement>(null);
+    const dpRef = useRef<DPlayer | null>(null);
+
+    useEffect(() => {
+        // 添加自定义样式
+        const styleElement = document.createElement('style');
+        styleElement.textContent = styles;
+        document.head.appendChild(styleElement);
+
+        // 只在 m3u 链接时初始化 DPlayer
+        if (videoUrl.includes("m3u") && playerRef.current) {
+            // 如果已经存在 DPlayer 实例，先销毁它
+            if (dpRef.current) {
+                dpRef.current.destroy();
+            }
+            
+            dpRef.current = new DPlayer({
+                container: playerRef.current,
+                video: {
+                    url: videoUrl,
+                    type: 'customHls',
+                    customType: {
+                        customHls: function (video: HTMLVideoElement) {
+                            const hls = new Hls();
+                            hls.loadSource(video.src);
+                            hls.attachMedia(video);
+                        }
+                    }
+                },
+                autoplay: true,
+                theme: '#b7daff',
+                loop: false,
+                screenshot: false,
+                hotkey: true,
+                preload: 'auto',
+                volume: 0.7,
+                mutex: true,
+                contextmenu: [],
+            });
+        }
+
+        return () => {
+            if (dpRef.current) {
+                dpRef.current.destroy();
+            }
+            // 移除自定义样式
+            document.head.removeChild(styleElement);
+        };
+    }, [videoUrl]);
 
     // Handle fullscreen toggle
     const toggleFullscreen = () => {
@@ -40,19 +111,25 @@ const VideoPlayer = ({
     return (
         <div className="relative" ref={playerRef}>
             {/* Video Player */}
-            <div className="w-full relative pb-[56.25%] bg-black">
-                <iframe
-                    src={`${videoUrl.includes("m3u") ? `https://svip.ffzyplay.com/?url=${videoUrl}&autoplay=true` : videoUrl}`}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: '100%',
-                        border: 'none'
-                    }}
-                    allowFullScreen
-                />
+            <div className="w-full h-[600px] bg-black overflow-hidden" style={{ height: '600px', minHeight: '600px', maxHeight: '600px' }}>
+                {!videoUrl.includes("m3u") ? (
+                    <iframe
+                        src={videoUrl}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            border: 'none',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0
+                        }}
+                        allowFullScreen
+                    />
+                ) : (
+                    <div className="w-full h-full" style={{ height: '600px', minHeight: '600px', maxHeight: '600px' }}>
+                        {/* DPlayer 会自动填充这个容器 */}
+                    </div>
+                )}
             </div>
 
             {/* Public Notice */}

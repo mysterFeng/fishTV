@@ -11,6 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "dplayer": "^1.27.1",
+    "hls.js": "^1.6.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
@@ -20,6 +22,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@eslint/js": "^9.18.0",
+    "@types/dplayer": "^1.25.5",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@typescript-eslint/eslint-plugin": "^8.20.0",
