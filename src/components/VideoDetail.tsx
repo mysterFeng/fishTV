@@ -46,7 +46,7 @@ const VideoDetail = ({
 
           <div className="flex flex-col md:flex-row gap-6">
             {/* Left: Cover image */}
-            <div className="w-full md:w-1/4">
+            <div className="w-1/2 mx-auto md:w-1/4">
               <div className="relative pb-[140%]">
                 <img
                   src={coverUrl}
