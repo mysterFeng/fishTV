@@ -69,19 +69,26 @@ const relatedContent = [
 ];
 
 const PlayPage = () => {
-  const { id, episode } = useParams<{ id: string; episode?: string }>();
+  const { id, episode, source } = useParams<{ id: string; episode?: string; source?: string }>();
   const navigate = useNavigate();
-  const { addToHistory } = useHistory();
+  const { addToHistory, history } = useHistory();
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>('moyu');
+  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>(() => {
+    // 优先使用 URL 中的 source 参数，如果没有则从历史记录中获取，最后使用默认值
+    if (source && source in VIDEO_SOURCES) {
+      return source as keyof typeof VIDEO_SOURCES;
+    }
+    const lastHistory = history.find(item => item.id === id);
+    return (lastHistory?.source as keyof typeof VIDEO_SOURCES) || 'moyu';
+  });
   const [currentEpisode, setCurrentEpisode] = useState(Number(episode || '1'));
 
   // 获取视频详情的函数
   const fetchVideo = async (source: keyof typeof VIDEO_SOURCES) => {
     try {
       // 如果是初始加载，使用 ID 获取详情
-      if (source === 'moyu' && id) {
+      if (id) {
         const response = await getVideoDetail(id, VIDEO_SOURCES[source].url);
         if (response.list && response.list.length > 0) {
           const videoData = response.list[0];
@@ -91,7 +98,8 @@ const PlayPage = () => {
             title: videoData.vod_name,
             imageUrl: videoData.vod_pic,
             episode: episode || '1',
-            lastWatched: new Date()
+            lastWatched: new Date(),
+            source: source
           });
         }
       } else if (video?.vod_name) {
@@ -105,7 +113,8 @@ const PlayPage = () => {
             title: videoData.vod_name,
             imageUrl: videoData.vod_pic,
             episode: episode || '1',
-            lastWatched: new Date()
+            lastWatched: new Date(),
+            source: source
           });
         }
       }
@@ -124,10 +133,34 @@ const PlayPage = () => {
   }, [id, episode]);
 
   // 处理视频源切换
-  const handleSourceChange = (source: keyof typeof VIDEO_SOURCES) => {
+  const handleSourceChange = async (source: keyof typeof VIDEO_SOURCES) => {
     setSelectedSource(source);
     setLoading(true);
-    fetchVideo(source);
+    
+    try {
+      // 使用当前视频标题搜索新数据源中的视频
+      if (video?.vod_name) {
+        const response = await searchVideo(video.vod_name, VIDEO_SOURCES[source].url);
+        if (response.list && response.list.length > 0) {
+          const newVideo = response.list[0];
+          setVideo(newVideo);
+          // 更新 URL 以包含新的数据源和视频 ID
+          navigate(`/play/${newVideo.vod_id}/${currentEpisode}/${source}`, { replace: true });
+          addToHistory({
+            id: newVideo.vod_id.toString(),
+            title: newVideo.vod_name,
+            imageUrl: newVideo.vod_pic,
+            episode: currentEpisode.toString(),
+            lastWatched: new Date(),
+            source: source
+          });
+        }
+      }
+    } catch (error) {
+      console.error('切换数据源失败:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getPlayUrl = () => {
@@ -143,7 +176,8 @@ const PlayPage = () => {
 
   const handleEpisodeChange = (ep: number) => {
     setCurrentEpisode(ep);
-    navigate(`/play/${id}/${ep}`);
+    // 更新 URL 时保持当前的数据源
+    navigate(`/play/${id}/${ep}/${selectedSource}`);
   };
 
   if (loading) {

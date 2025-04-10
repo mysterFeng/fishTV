@@ -6,6 +6,7 @@ interface HistoryItem {
   imageUrl: string;
   lastWatched: Date;
   episode?: string;
+  source?: string;
 }
 
 interface HistoryContextType {

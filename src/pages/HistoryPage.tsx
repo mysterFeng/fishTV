@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from '../context/HistoryContext';
 import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { VIDEO_SOURCES } from '../api/config';
 
 const HistoryPage: React.FC = () => {
   const { history, removeFromHistory, clearHistory } = useHistory();
@@ -29,7 +30,7 @@ const HistoryPage: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {history.map((item) => (
               <div key={item.id} className="relative group">
-                <Link to={`/detail/${item.id}`}>
+                <Link to={`/play/${item.id}/${item.episode || '1'}/${item.source || 'moyu'}`}>
                   <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
                     <img
                       src={item.imageUrl}
@@ -39,10 +40,17 @@ const HistoryPage: React.FC = () => {
                   </div>
                   <div className="mt-2">
                     <h3 className="text-sm font-medium line-clamp-1">{item.title}</h3>
-                    {item.episode && (
-                      <p className="text-xs text-gray-500">看到第 {item.episode} 集</p>
-                    )}
-                    <p className="text-xs text-gray-500">
+                    <div className="flex items-center text-xs text-gray-500 mt-1 space-x-2">
+                      {item.episode && (
+                        <span>看到第 {item.episode} 集</span>
+                      )}
+                      {item.source && (
+                        <span className="px-2 py-0.5 bg-gray-100 rounded">
+                          {VIDEO_SOURCES[item.source as keyof typeof VIDEO_SOURCES]?.name || '未知来源'}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
                       {new Date(item.lastWatched).toLocaleString()}
                     </p>
                   </div>

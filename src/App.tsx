@@ -120,7 +120,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/detail/:id" element={<DetailPage />} />
-          <Route path="/play/:id/:episode?" element={<PlayPage />} />
+          <Route path="/play/:id/:episode?/:source?" element={<PlayPage />} />
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/movies" element={<HomePage />} />

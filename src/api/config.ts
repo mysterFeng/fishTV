@@ -9,7 +9,7 @@ export const VIDEO_SOURCES = {
     url: 'https://tv.codebug.icu/heimuer/api.php'
   },
   subocaiji: {
-    name: '速播采集',
+    name: '摸鱼🐟',
     url: 'https://tv.codebug.icu/subocaiji/api.php'
   }
 };

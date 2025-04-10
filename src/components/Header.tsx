@@ -72,7 +72,7 @@ const Header = () => {
                     {history.slice(0, 5).map((item) => (
                       <Link
                         key={item.id}
-                        to={`/play/${item.id}/${item.episode || '1'}`}
+                        to={`/play/${item.id}/${item.episode || '1'}/${item.source || 'moyu'}`}
                         className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-md"
                         onClick={() => setShowHistory(false)}
                       >

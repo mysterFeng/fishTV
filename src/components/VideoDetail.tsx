@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { VIDEO_SOURCES } from '../api/config';
 
 interface VideoDetailProps {
   id: string;
@@ -27,7 +28,15 @@ const VideoDetail = ({
   episodeNames = [],
   currentEpisode = 1,
 }: VideoDetailProps) => {
-  const [selectedSource, setSelectedSource] = useState<number>(1); // Default to first source
+  const { source } = useParams<{ source?: string }>();
+  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>(() => {
+    // 如果 URL 中有数据源参数，并且是有效的数据源，则使用它
+    if (source && source in VIDEO_SOURCES) {
+      return source as keyof typeof VIDEO_SOURCES;
+    }
+    // 否则使用默认值
+    return 'moyu';
+  });
 
   // Generate episode numbers for the pagination
   const episodes = Array.from({ length: episodeCount }, (_, i) => i + 1);
@@ -65,7 +74,7 @@ const VideoDetail = ({
 
               <div className="flex gap-3 items-center">
                 <Link
-                  to={`/play/${id}-${selectedSource}-${currentEpisode}`}
+                  to={`/play/${id}/${currentEpisode}/${selectedSource}`}
                   className="flex items-center px-6 py-2 bg-primary text-white rounded-md hover:bg-red-700 transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -93,18 +102,19 @@ const VideoDetail = ({
 
           {/* Source tabs */}
           <div className="flex gap-4 mt-4">
-            <button
-              className={`px-4 py-1 rounded-full ${selectedSource === 1 ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'}`}
-              onClick={() => setSelectedSource(1)}
-            >
-              摸鱼☁️
-            </button>
-            {/*<button*/}
-            {/*  className={`px-4 py-1 rounded-full ${selectedSource === 2 ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700'}`}*/}
-            {/*  onClick={() => setSelectedSource(2)}*/}
-            {/*>*/}
-            {/*  优质云*/}
-            {/*</button>*/}
+            {Object.entries(VIDEO_SOURCES).map(([key, source]) => (
+              <button
+                key={key}
+                className={`px-4 py-1 rounded-full transition-colors ${
+                  selectedSource === key
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+                onClick={() => setSelectedSource(key as keyof typeof VIDEO_SOURCES)}
+              >
+                {source.name}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -113,7 +123,7 @@ const VideoDetail = ({
           {episodes.map((episode, index) => (
             <Link
               key={episode}
-              to={`/play/${id}/${episode}`}
+              to={`/play/${id}/${episode}/${selectedSource}`}
               className={`py-2 px-1 text-center border rounded hover:border-primary transition-colors ${
                 episode === currentEpisode ? 'border-primary text-primary' : 'border-gray-200 text-gray-700'
               }`}
