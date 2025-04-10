@@ -14,10 +14,17 @@ const HistoryPage: React.FC = () => {
           <h1 className="text-2xl font-bold">观看历史</h1>
           {history.length > 0 && (
             <button
-              onClick={clearHistory}
-              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              onClick={() => {
+                if (window.confirm('确定要清空所有观看历史吗？此操作不可恢复。')) {
+                  clearHistory();
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
             >
-              清空历史
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              清空历史记录
             </button>
           )}
         </div>
@@ -56,8 +63,13 @@ const HistoryPage: React.FC = () => {
                   </div>
                 </Link>
                 <button
-                  onClick={() => removeFromHistory(item.id)}
-                  className="absolute top-2 right-2 bg-black bg-opacity-50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => {
+                    if (window.confirm('确定要删除这条观看记录吗？')) {
+                      removeFromHistory(item.id);
+                    }
+                  }}
+                  className="absolute top-2 right-2 bg-black bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-opacity-70"
+                  title="删除记录"
                 >
                   <svg
                     className="w-4 h-4"
@@ -69,7 +81,7 @@ const HistoryPage: React.FC = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                   </svg>
                 </button>

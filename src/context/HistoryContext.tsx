@@ -33,8 +33,8 @@ export const HistoryProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const existingIndex = prev.findIndex(h => h.id === item.id);
       if (existingIndex >= 0) {
         const updated = [...prev];
-        updated[existingIndex] = { ...item, lastWatched: new Date() };
-        return updated;
+        const [existingItem] = updated.splice(existingIndex, 1);
+        return [{ ...existingItem, lastWatched: new Date() }, ...updated];
       }
       return [{ ...item, lastWatched: new Date() }, ...prev];
     });
