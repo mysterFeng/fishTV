@@ -10,12 +10,15 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="flex min-h-screen bg-[#f3f8f8]">
-      <Sidebar />
+      {/* 只在桌面端显示侧边栏 */}
+      <div className="hidden lg:block fixed left-0 top-0 h-screen w-[220px]">
+        <Sidebar />
+      </div>
 
-      <div className="flex-1 ml-[200px]">
+      <div className="flex-1 lg:ml-[220px]">
         <Header />
-
-        <main className="container mx-auto px-6">
+        
+        <main className="w-full px-2 sm:px-4 md:px-6">
           {children}
         </main>
 

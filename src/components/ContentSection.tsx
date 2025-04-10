@@ -46,17 +46,17 @@ const ContentSection = ({ title, items, seeMoreLink, loading = false }: ContentS
   };
 
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="category-heading text-lg md:text-xl">{title}</h2>
+    <div className="mb-6 md:mb-8">
+      <div className="flex items-center justify-between mb-3 md:mb-4">
+        <h2 className="category-heading text-base md:text-lg font-medium">{title}</h2>
         {seeMoreLink && (
-          <a href={seeMoreLink} className="text-sm text-gray-500 hover:text-primary">
+          <a href={seeMoreLink} className="text-xs md:text-sm text-gray-500 hover:text-primary">
             查看更多 &gt;
           </a>
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4">
         {loading ? (
           Array(6).fill(0).map((_, index) => (
             <ContentCardSkeleton key={index} />

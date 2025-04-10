@@ -8,7 +8,7 @@ interface BannerProps {
 
 const Banner = ({ title, imageUrl, description }: BannerProps) => {
   return (
-    <div className="relative w-full h-64 md:h-80 lg:h-96 rounded-lg overflow-hidden mb-8">
+    <div className="relative w-full h-48 sm:h-56 md:h-64 lg:h-80 rounded-lg overflow-hidden mb-4 md:mb-6">
       <img
         src={imageUrl}
         alt={title}
@@ -17,10 +17,10 @@ const Banner = ({ title, imageUrl, description }: BannerProps) => {
 
       {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent">
-        <div className="absolute bottom-0 left-0 p-6">
-          <h2 className="text-white text-xl md:text-2xl font-bold mb-2">{title}</h2>
+        <div className="absolute bottom-0 left-0 p-4 md:p-6">
+          <h2 className="text-white text-lg md:text-xl lg:text-2xl font-bold mb-1 md:mb-2">{title}</h2>
           {description && (
-            <p className="text-white text-sm md:text-base opacity-80 line-clamp-2">{description}</p>
+            <p className="text-white text-xs md:text-sm lg:text-base opacity-80 line-clamp-2">{description}</p>
           )}
 
           {/* <button className="mt-4 px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center">

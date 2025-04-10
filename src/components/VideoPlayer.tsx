@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from 'react';
-import DPlayer from 'dplayer';
+import DPlayer, {DPlayerEvents} from 'dplayer';
 import Hls from 'hls.js';
 
 // 添加自定义样式
@@ -62,6 +62,7 @@ const VideoPlayer = ({
                 container: playerRef.current,
                 video: {
                     url: videoUrl,
+                    pic: 'https://img2.baidu.com/it/u=2899654337,1741233696&fm=253&fmt=auto&app=120&f=JPEG?w=1280&h=800',
                     type: 'customHls',
                     customType: {
                         customHls: function (video: HTMLVideoElement) {
@@ -80,6 +81,10 @@ const VideoPlayer = ({
                 volume: 0.7,
                 mutex: true,
                 contextmenu: [],
+            });
+
+            dpRef.current.on(DPlayerEvents.fullscreen, () => {
+                console.log('fullscreen');
             });
         }
 
