@@ -5,22 +5,41 @@ import Hls from 'hls.js';
 // 添加自定义样式
 const styles = `
     .dplayer {
-        height: 600px !important;
+        height: 100% !important;
     }
     .dplayer-video {
-        height: 600px !important;
+        height: 100% !important;
         object-fit: contain !important;
     }
     .dplayer-video-current {
-        height: 600px !important;
+        height: 100% !important;
         object-fit: contain !important;
     }
     .dplayer-video-wrap {
-        height: 600px !important;
+        height: 100% !important;
     }
     .dplayer-controller {
         position: absolute !important;
         bottom: 0 !important;
+    }
+
+    @media (max-width: 640px) {
+        .video-container {
+            height: 56.25vw !important;
+            min-height: 200px !important;
+            max-height: 400px !important;
+            margin: 12px auto !important;
+            border-radius: 8px !important;
+        }
+    }
+
+    @media (min-width: 641px) {
+        .video-container {
+            height: 400px !important;
+            margin: 16px auto !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        }
     }
 `;
 
@@ -62,7 +81,7 @@ const VideoPlayer = ({
                 container: playerRef.current,
                 video: {
                     url: videoUrl,
-                    pic: 'https://img2.baidu.com/it/u=2899654337,1741233696&fm=253&fmt=auto&app=120&f=JPEG?w=1280&h=800',
+                    // pic: 'https://img2.baidu.com/it/u=2899654337,1741233696&fm=253&fmt=auto&app=120&f=JPEG?w=1280&h=800',
                     type: 'customHls',
                     customType: {
                         customHls: function (video: HTMLVideoElement) {
@@ -81,10 +100,6 @@ const VideoPlayer = ({
                 volume: 0.7,
                 mutex: true,
                 contextmenu: [],
-            });
-
-            dpRef.current.on(DPlayerEvents.fullscreen, () => {
-                console.log('fullscreen');
             });
         }
 
@@ -116,7 +131,7 @@ const VideoPlayer = ({
     return (
         <div className="relative" ref={playerRef}>
             {/* Video Player */}
-            <div className="w-full h-[600px] bg-black overflow-hidden" style={{ height: '600px', minHeight: '600px', maxHeight: '600px' }}>
+            <div className="video-container w-full bg-black overflow-hidden">
                 {!videoUrl.includes("m3u") ? (
                     <iframe
                         src={videoUrl}
@@ -131,7 +146,7 @@ const VideoPlayer = ({
                         allowFullScreen
                     />
                 ) : (
-                    <div className="w-full h-full" style={{ height: '600px', minHeight: '600px', maxHeight: '600px' }}>
+                    <div className="w-full h-full">
                         {/* DPlayer 会自动填充这个容器 */}
                     </div>
                 )}
