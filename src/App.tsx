@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Layout from './components/Layout';
 import Banner from './components/Banner';
@@ -12,6 +12,39 @@ import { bannerData, trendingContent, tvContent, animeContent } from './data/sam
 import { getVideoList } from './api/video';
 import { Video } from './api/types';
 
+// 缓存键名
+const CACHE_KEYS = {
+  MOVIES: 'movies_cache',
+  TV: 'tv_cache',
+  ANIME: 'anime_cache',
+  VARIETY: 'variety_cache'
+};
+
+// 缓存过期时间（1小时）
+const CACHE_EXPIRY = 60 * 60 * 1000;
+
+// 缓存工具函数
+const cache = {
+  get: (key: string) => {
+    const item = localStorage.getItem(key);
+    if (!item) return null;
+    
+    const { data, timestamp } = JSON.parse(item);
+    if (Date.now() - timestamp > CACHE_EXPIRY) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return data;
+  },
+  
+  set: (key: string, data: any) => {
+    localStorage.setItem(key, JSON.stringify({
+      data,
+      timestamp: Date.now()
+    }));
+  }
+};
+
 // Homepage Component
 const HomePage = () => {
   const [movieContent, setMovieContent] = useState<Video[]>([]);
@@ -23,56 +56,67 @@ const HomePage = () => {
   const [animeLoading, setAnimeLoading] = useState(true);
   const [varietyLoading, setVarietyLoading] = useState(true);
 
+  // 获取数据的通用函数
+  const fetchData = async (
+    type: number,
+    setData: React.Dispatch<React.SetStateAction<Video[]>>,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    cacheKey: string
+  ) => {
+    // 先检查缓存
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      setData(cachedData);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await getVideoList({ t: type });
+      setData(response.list);
+      // 设置缓存
+      cache.set(cacheKey, response.list);
+    } catch (error) {
+      console.error(`获取数据失败:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await getVideoList({ t: 6 });
-        setMovieContent(response.list);
-      } catch (error) {
-        console.error('获取电影数据失败:', error);
-      } finally {
-        setMovieLoading(false);
-      }
-    };
-
-    const fetchTvShows = async () => {
-      try {
-        const response = await getVideoList({ t: 13 });
-        setTvContent(response.list);
-      } catch (error) {
-        console.error('获取电视剧数据失败:', error);
-      } finally {
-        setTvLoading(false);
-      }
-    };
-
-    const fetchAnime = async () => {
-      try {
-        const response = await getVideoList({ t: 60 });
-        setAnimeContent(response.list);
-      } catch (error) {
-        console.error('获取动漫数据失败:', error);
-      } finally {
-        setAnimeLoading(false);
-      }
-    };
-
-    const fetchVariety = async () => {
-      try {
-        const response = await getVideoList({ t: 38 });
-        setVarietyContent(response.list);
-      } catch (error) {
-        console.error('获取综艺数据失败:', error);
-      } finally {
-        setVarietyLoading(false);
-      }
-    };
-
-    fetchMovies();
-    fetchTvShows();
-    fetchAnime();
-    fetchVariety();
+    fetchData(6, setMovieContent, setMovieLoading, CACHE_KEYS.MOVIES);
+    fetchData(13, setTvContent, setTvLoading, CACHE_KEYS.TV);
+    fetchData(60, setAnimeContent, setAnimeLoading, CACHE_KEYS.ANIME);
+    fetchData(38, setVarietyContent, setVarietyLoading, CACHE_KEYS.VARIETY);
   }, []);
+
+  // 使用useMemo缓存组件渲染
+  const contentSections = useMemo(() => [
+    {
+      title: "电影",
+      items: movieContent,
+      seeMoreLink: "/movies",
+      loading: movieLoading
+    },
+    {
+      title: "综艺",
+      items: varietyContent,
+      seeMoreLink: "/variety",
+      loading: varietyLoading
+    },
+    {
+      title: "电视剧",
+      items: tvContent,
+      seeMoreLink: "/tv",
+      loading: tvLoading
+    },
+    {
+      title: "动漫",
+      items: animeContent,
+      seeMoreLink: "/anime",
+      loading: animeLoading
+    }
+  ], [movieContent, varietyContent, tvContent, animeContent, movieLoading, varietyLoading, tvLoading, animeLoading]);
 
   return (
     <Layout>
@@ -82,33 +126,15 @@ const HomePage = () => {
         description={bannerData.description}
       />
 
-      <ContentSection
-        title="电影"
-        items={movieContent}
-        seeMoreLink="/movies"
-        loading={movieLoading}
-      />
-
-      <ContentSection
-        title="综艺"
-        items={varietyContent}
-        seeMoreLink="/variety"
-        loading={varietyLoading}
-      />
-
-      <ContentSection
-        title="电视剧"
-        items={tvContent}
-        seeMoreLink="/tv"
-        loading={tvLoading}
-      />
-
-      <ContentSection
-        title="动漫"
-        items={animeContent}
-        seeMoreLink="/anime"
-        loading={animeLoading}
-      />
+      {contentSections.map((section, index) => (
+        <ContentSection
+          key={index}
+          title={section.title}
+          items={section.items}
+          seeMoreLink={section.seeMoreLink}
+          loading={section.loading}
+        />
+      ))}
     </Layout>
   );
 };
