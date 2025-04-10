@@ -42,7 +42,7 @@ const VideoPlayer = ({
             {/* Video Player */}
             <div className="w-full relative pb-[56.25%] bg-black">
                 <iframe
-                    src={`${videoUrl.includes("m3u") ? `https://hoplayer.com/index.html?url=${videoUrl}&autoplay=true` : videoUrl}`}
+                    src={`${videoUrl.includes("m3u") ? `https://svip.ffzyplay.com/?url=${videoUrl}&autoplay=true` : videoUrl}`}
                     style={{
                         position: 'absolute',
                         top: 0,
