@@ -11,6 +11,7 @@ import { HistoryProvider } from './context/HistoryContext';
 import { bannerData, trendingContent, tvContent, animeContent } from './data/sampleData';
 import { getVideoList } from './api/video';
 import { Video } from './api/types';
+import TypeListPage from "./pages/TypeListPage.tsx";
 
 // 缓存键名
 const CACHE_KEYS = {
@@ -149,10 +150,10 @@ function App() {
           <Route path="/play/:id/:episode?/:source?" element={<PlayPage />} />
           <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/history" element={<HistoryPage />} />
-          <Route path="/movies" element={<HomePage />} />
-          <Route path="/tv" element={<HomePage />} />
-          <Route path="/anime" element={<HomePage />} />
-          <Route path="/variety" element={<HomePage />} />
+          <Route path="/movies" element={<TypeListPage type="movies" />} />
+          <Route path="/tv" element={<TypeListPage type="tv" />} />
+          <Route path="/anime" element={<TypeListPage type="anime" />} />
+          <Route path="/variety" element={<TypeListPage type="variety" />} />
         </Routes>
       </Router>
     </HistoryProvider>
