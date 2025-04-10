@@ -9,7 +9,7 @@ interface VideoDetailProps {
   year: string;
   area: string;
   type: string;
-  description: string;
+  description: string | { __html: string };
   episodeCount: number;
   episodeNames?: string[];
   currentEpisode?: number;
@@ -64,7 +64,10 @@ const VideoDetail = ({
                 <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded">{type}</span>
               </div>
 
-              <p className="text-gray-700 mb-6">{description}</p>
+              <div 
+                className="text-gray-700 mb-6 prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={typeof description === 'string' ? { __html: description } : description}
+              />
 
               <div className="flex gap-3 items-center">
                 <Link

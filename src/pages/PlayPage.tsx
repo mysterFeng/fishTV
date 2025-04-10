@@ -253,16 +253,18 @@ const PlayPage = () => {
 
           {/* Episode selection section */}
           <div className="lg:w-80 bg-white rounded-lg p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">选集播放</h2>
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">选集播放</h2>
+              </div>
 
-              <div className="flex space-x-3">
+              <div className="flex flex-wrap gap-2">
                 {Object.entries(VIDEO_SOURCES).map(([key, source]) => (
                   <button
                     key={key}
-                    className={`px-4 py-1 rounded-full transition-colors ${
+                    className={`px-4 py-2 rounded-full transition-colors text-sm ${
                       selectedSource === key
-                        ? 'bg-primary text-white'
+                        ? 'bg-primary text-white shadow-md'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                     onClick={() => handleSourceChange(key as keyof typeof VIDEO_SOURCES)}
@@ -274,7 +276,7 @@ const PlayPage = () => {
             </div>
 
             {/* Episodes grid */}
-            <div className="relative">
+            <div className="relative mt-6">
               <div className="grid grid-cols-3 gap-2 max-h-[400px] overflow-y-auto overflow-x-hidden">
                 {Array.from({ length: totalEpisodes }, (_, i) => i + 1).map((ep) => {
                   // 解析播放地址，获取集数名称
