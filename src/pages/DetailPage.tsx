@@ -3,32 +3,54 @@ import { useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 import VideoDetail from '../components/VideoDetail';
 import VideoDetailSkeleton from '../components/VideoDetailSkeleton';
-import { getVideoDetail } from '../api/video';
+import { getVideoDetail, searchVideo } from '../api/video';
 import { Video } from '../api/types';
+import { VIDEO_SOURCES } from '../api/config';
 
 const DetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id, source } = useParams<{ id: string; source?: string }>();
   const [videoData, setVideoData] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>(() => {
+    if (source && source in VIDEO_SOURCES) {
+      return source as keyof typeof VIDEO_SOURCES;
+    }
+    return 'moyu';
+  });
 
-  useEffect(() => {
-    const fetchVideoData = async () => {
-      try {
-        const response = await getVideoDetail(id || '');
+  const fetchVideoData = async (source: keyof typeof VIDEO_SOURCES) => {
+    setLoading(true);
+    try {
+      // 如果是初始加载，使用 ID 获取详情
+      if (id && !videoData) {
+        const response = await getVideoDetail(id, VIDEO_SOURCES[source].url);
         if (response.list && response.list.length > 0) {
           setVideoData(response.list[0]);
         }
-      } catch (error) {
-        console.error('获取视频详情失败:', error);
-      } finally {
-        setLoading(false);
+      } else if (videoData?.vod_name) {
+        // 如果是切换数据源，使用标题搜索
+        const searchKeyword = videoData.vod_name.split(' ')[0].split('　')[0]; // 处理普通空格和全角空格
+        const response = await searchVideo(searchKeyword, VIDEO_SOURCES[source].url);
+        if (response.list && response.list.length > 0) {
+          setVideoData(response.list[0]);
+        }
       }
-    };
-
-    if (id) {
-      fetchVideoData();
+    } catch (error) {
+      console.error('获取视频详情失败:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [id]);
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchVideoData(selectedSource);
+    }
+  }, [id, selectedSource]);
+
+  const handleSourceChange = (source: keyof typeof VIDEO_SOURCES) => {
+    setSelectedSource(source);
+  };
 
   if (loading) {
     return (
@@ -86,6 +108,8 @@ const DetailPage = () => {
         description={videoData.vod_content}
         episodeCount={count}
         episodeNames={names}
+        currentSource={selectedSource}
+        onSourceChange={handleSourceChange}
       />
     </Layout>
   );

@@ -13,6 +13,8 @@ interface VideoDetailProps {
   episodeCount: number;
   episodeNames?: string[];
   currentEpisode?: number;
+  currentSource: keyof typeof VIDEO_SOURCES;
+  onSourceChange?: (source: keyof typeof VIDEO_SOURCES) => void;
   // Add more props as needed
 }
 
@@ -27,17 +29,9 @@ const VideoDetail = ({
   episodeCount,
   episodeNames = [],
   currentEpisode = 1,
+  currentSource,
+  onSourceChange,
 }: VideoDetailProps) => {
-  const { source } = useParams<{ source?: string }>();
-  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>(() => {
-    // 如果 URL 中有数据源参数，并且是有效的数据源，则使用它
-    if (source && source in VIDEO_SOURCES) {
-      return source as keyof typeof VIDEO_SOURCES;
-    }
-    // 否则使用默认值
-    return 'moyu';
-  });
-
   // Generate episode numbers for the pagination
   const episodes = Array.from({ length: episodeCount }, (_, i) => i + 1);
 
@@ -74,7 +68,7 @@ const VideoDetail = ({
 
               <div className="flex gap-3 items-center">
                 <Link
-                  to={`/play/${id}/${currentEpisode}/${selectedSource}`}
+                  to={`/play/${id}/${currentEpisode}/${currentSource}`}
                   className="flex items-center px-6 py-2 bg-primary text-white rounded-md hover:bg-red-700 transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -106,11 +100,11 @@ const VideoDetail = ({
               <button
                 key={key}
                 className={`px-4 py-1 rounded-full transition-colors ${
-                  selectedSource === key
+                  currentSource === key
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
-                onClick={() => setSelectedSource(key as keyof typeof VIDEO_SOURCES)}
+                onClick={() => onSourceChange?.(key as keyof typeof VIDEO_SOURCES)}
               >
                 {source.name}
               </button>
@@ -123,7 +117,7 @@ const VideoDetail = ({
           {episodes.map((episode, index) => (
             <Link
               key={episode}
-              to={`/play/${id}/${episode}/${selectedSource}`}
+              to={`/play/${id}/${episode}/${currentSource}`}
               className={`py-2 px-1 text-center border rounded hover:border-primary transition-colors ${
                 episode === currentEpisode ? 'border-primary text-primary' : 'border-gray-200 text-gray-700'
               }`}
