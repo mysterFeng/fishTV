@@ -29,7 +29,42 @@ const MOVIE_SUB_TYPES = [
   { id: 23, name: '爱情片' },
   { id: 24, name: '犯罪片' },
   { id: 25, name: '科幻片' },
-  { id: 26, name: '动画电影' }
+  { id: 26, name: '动画电影' },
+];
+
+// 定义电视剧子分类映射
+const TV_SUB_TYPES = [
+  { id: 13, name: '国产剧' },
+  { id: 14, name: '港剧' },
+  { id: 15, name: '韩剧' },
+  { id: 16, name: '日剧' },
+  { id: 28, name: '泰剧' },
+  { id: 29, name: '台剧' },
+  { id: 30, name: '欧美剧' },
+  { id: 31, name: '新马剧' },
+  { id: 32, name: '其他剧' }
+];
+
+// 定义动漫子分类映射
+const ANIME_SUB_TYPES = [
+  { id: 60, name: '国产动漫' },
+  { id: 57, name: '欧美动漫' },
+  { id: 58, name: '日本动漫' },
+  { id: 59, name: '韩国动漫' },
+  { id: 61, name: '港台动漫' },
+  { id: 62, name: '新马泰动漫' },
+  { id: 63, name: '其它动漫' }
+];
+
+// 定义综艺子分类映射
+const VARIETY_SUB_TYPES = [
+  { id: 38, name: '国产综艺' },
+  { id: 39, name: '港台综艺' },
+  { id: 40, name: '韩国综艺' },
+  { id: 41, name: '日本综艺' },
+  { id: 42, name: '欧美综艺' },
+  { id: 43, name: '新马泰综艺' },
+  { id: 44, name: '其他综艺' }
 ];
 
 interface TypeListPageProps {
@@ -44,6 +79,9 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [selectedMovieType, setSelectedMovieType] = useState(6); // 默认选中剧情片
+  const [selectedTvType, setSelectedTvType] = useState(13); // 默认选中国产剧
+  const [selectedAnimeType, setSelectedAnimeType] = useState(60); // 默认选中欧美动漫
+  const [selectedVarietyType, setSelectedVarietyType] = useState(38); // 默认选中国产综艺
   const observer = useRef<IntersectionObserver | null>(null);
   const lastVideoElementRef = useCallback((node: HTMLDivElement | null) => {
     if (loading) return;
@@ -64,7 +102,11 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
       try {
         const response = await getVideoList({
           ac: 'videolist',
-          t: type === 'movies' ? selectedMovieType : TYPE_MAP[type].id,
+          t: type === 'movies' ? selectedMovieType : 
+             type === 'tv' ? selectedTvType :
+             type === 'anime' ? selectedAnimeType :
+             type === 'variety' ? selectedVarietyType : 
+             TYPE_MAP[type].id,
           pg: page,
           pagesize: 24,
         });
@@ -80,7 +122,7 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
     };
 
     fetchVideos();
-  }, [type, page, selectedMovieType]);
+  }, [type, page, selectedMovieType, selectedTvType, selectedAnimeType, selectedVarietyType]);
 
   if (!type || !TYPE_MAP[type]) {
     return (
@@ -103,21 +145,7 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
           <div className="mb-6 overflow-x-auto">
             <div className="flex items-center space-x-2 pb-2">
               <span className="text-gray-700 font-medium whitespace-nowrap">剧情：</span>
-              <button
-                onClick={() => {
-                  setSelectedMovieType(6);
-                  setPage(1);
-                  setVideos([]);
-                }}
-                className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
-                  selectedMovieType === 6
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                全部
-              </button>
-              {MOVIE_SUB_TYPES.slice(1).map(subType => (
+              {MOVIE_SUB_TYPES.map(subType => (
                 <button
                   key={subType.id}
                   onClick={() => {
@@ -127,6 +155,81 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
                   }}
                   className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
                     selectedMovieType === subType.id
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {subType.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {type === 'tv' && (
+          <div className="mb-6 overflow-x-auto">
+            <div className="flex items-center space-x-2 pb-2">
+              <span className="text-gray-700 font-medium whitespace-nowrap">电视剧：</span>
+              {TV_SUB_TYPES.map(subType => (
+                <button
+                  key={subType.id}
+                  onClick={() => {
+                    setSelectedTvType(subType.id);
+                    setPage(1);
+                    setVideos([]);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
+                    selectedTvType === subType.id
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {subType.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {type === 'anime' && (
+          <div className="mb-6 overflow-x-auto">
+            <div className="flex items-center space-x-2 pb-2">
+              <span className="text-gray-700 font-medium whitespace-nowrap">动漫：</span>
+              {ANIME_SUB_TYPES.map(subType => (
+                <button
+                  key={subType.id}
+                  onClick={() => {
+                    setSelectedAnimeType(subType.id);
+                    setPage(1);
+                    setVideos([]);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
+                    selectedAnimeType === subType.id
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {subType.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {type === 'variety' && (
+          <div className="mb-6 overflow-x-auto">
+            <div className="flex items-center space-x-2 pb-2">
+              <span className="text-gray-700 font-medium whitespace-nowrap">综艺：</span>
+              {VARIETY_SUB_TYPES.map(subType => (
+                <button
+                  key={subType.id}
+                  onClick={() => {
+                    setSelectedVarietyType(subType.id);
+                    setPage(1);
+                    setVideos([]);
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
+                    selectedVarietyType === subType.id
                       ? 'bg-primary text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
