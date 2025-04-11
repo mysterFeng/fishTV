@@ -2,7 +2,7 @@ import type { ContentItem } from '../components/ContentSection';
 
 export const bannerData = {
   title: "摸鱼TV 欢迎你～",
-  imageUrl: "https://b0.bdstatic.com/c4cf37b3294a14f89f0f490ff953cafa.jpg@h_1280",
+  imageUrl: "https://img1.baidu.com/it/u=2033808109,2698966182&fm=253&fmt=auto&app=120&f=JPEG?w=1422&h=800",
   description: "大家好，我是摸鱼TV，欢迎来到我的世界！"
 };
 
