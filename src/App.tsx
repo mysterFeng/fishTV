@@ -8,6 +8,8 @@ import PlayPage from './pages/PlayPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import HistoryPage from './pages/HistoryPage';
 import { HistoryProvider } from './context/HistoryContext';
+import { ThemeProvider } from './context/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
 import { bannerData, trendingContent, tvContent, animeContent } from './data/sampleData';
 import { getVideoList } from './api/video';
 import { Video } from './api/types';
@@ -142,21 +144,24 @@ const HomePage = () => {
 
 function App() {
   return (
-    <HistoryProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/detail/:id" element={<DetailPage />} />
-          <Route path="/play/:id/:episode?/:source?" element={<PlayPage />} />
-          <Route path="/search" element={<SearchResultsPage />} />
-          <Route path="/history" element={<HistoryPage />} />
-          <Route path="/movies" element={<TypeListPage type="movies" />} />
-          <Route path="/tv" element={<TypeListPage type="tv" />} />
-          <Route path="/anime" element={<TypeListPage type="anime" />} />
-          <Route path="/variety" element={<TypeListPage type="variety" />} />
-        </Routes>
-      </Router>
-    </HistoryProvider>
+    <ThemeProvider>
+      <HistoryProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/detail/:id" element={<DetailPage />} />
+            <Route path="/play/:id/:episode?/:source?" element={<PlayPage />} />
+            <Route path="/search" element={<SearchResultsPage />} />
+            <Route path="/history" element={<HistoryPage />} />
+            <Route path="/movies" element={<TypeListPage type="movies" />} />
+            <Route path="/tv" element={<TypeListPage type="tv" />} />
+            <Route path="/anime" element={<TypeListPage type="anime" />} />
+            <Route path="/variety" element={<TypeListPage type="variety" />} />
+          </Routes>
+          <ThemeToggle />
+        </Router>
+      </HistoryProvider>
+    </ThemeProvider>
   );
 }
 

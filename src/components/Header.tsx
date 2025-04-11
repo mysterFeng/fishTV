@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { HiSearch } from 'react-icons/hi';
+import { HiSearch, HiClock, HiHome } from 'react-icons/hi';
 import { useHistory } from '../context/HistoryContext';
+import ThemeToggle from './ThemeToggle';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const navigate = useNavigate();
   const { history } = useHistory();
+  const timeoutRef = useRef<number | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,10 +19,37 @@ const Header = () => {
     }
   };
 
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+    }
+    setShowHistory(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = window.setTimeout(() => {
+      setShowHistory(false);
+    }, 200); // 200ms 的延迟
+  };
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-30">
       <div className="w-full px-2 sm:px-4 py-3">
         <div className="flex items-center justify-between gap-2">
+          {/* 手机端返回首页按钮 */}
+          <Link to="/" className="home-button lg:hidden">
+            <HiHome className="icon" />
+          </Link>
+
           {/* 搜索框 */}
           <form onSubmit={handleSearch} className="flex-1 min-w-0">
             <div className="relative">
@@ -39,52 +69,59 @@ const Header = () => {
             </div>
           </form>
 
-          {/* 历史记录按钮 */}
-          <Link
-            to="/history"
-            className="p-2 rounded-md hover:bg-gray-100 flex-shrink-0"
-            onMouseEnter={() => setShowHistory(true)}
-            onMouseLeave={() => setShowHistory(false)}
-          >
-            <span className="text-sm text-gray-600 hidden sm:inline">观看历史</span>
-            <HiSearch className="w-5 h-5 text-gray-600 sm:hidden" />
-          </Link>
-        </div>
+          {/* 导航工具按钮 */}
+          <div className="nav-tools relative">
+            {/* 历史记录按钮 */}
+            <Link
+              to="/history"
+              className="history-button"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              <HiClock className="icon" />
+              <span className="text">历史</span>
+            </Link>
 
-        {/* 历史记录下拉菜单 */}
-        {showHistory && history.length > 0 && (
-          <div 
-            className="absolute right-2 sm:right-4 mt-2 w-[calc(100%-1rem)] sm:w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
-            onMouseEnter={() => setShowHistory(true)}
-            onMouseLeave={() => setShowHistory(false)}
-          >
-            <div className="p-2">
-              {history.slice(0, 5).map((item) => (
-                <div key={item.id} className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-md group">
-                  <Link
-                    to={`/play/${item.id}/${item.episode || '1'}/${item.source || 'moyu'}`}
-                    className="flex-1 flex items-center space-x-3 min-w-0"
-                    onClick={() => setShowHistory(false)}
-                  >
-                    <div className="w-16 h-9 rounded overflow-hidden">
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
+            {/* 主题切换按钮 */}
+            <ThemeToggle />
+
+            {/* 历史记录下拉菜单 */}
+            {showHistory && history.length > 0 && (
+              <div 
+                ref={dropdownRef}
+                className="absolute right-0 top-full mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <div className="p-2">
+                  {history.slice(0, 5).map((item) => (
+                    <div key={item.id} className="flex items-center space-x-3 p-2 hover:bg-gray-100 rounded-md group">
+                      <Link
+                        to={`/play/${item.id}/${item.episode || '1'}/${item.source || 'moyu'}`}
+                        className="flex-1 flex items-center space-x-3 min-w-0"
+                        onClick={() => setShowHistory(false)}
+                      >
+                        <div className="w-16 h-9 rounded overflow-hidden">
+                          <img
+                            src={item.imageUrl}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{item.title}</p>
+                          {item.episode && (
+                            <p className="text-xs text-gray-500">看到第 {item.episode} 集</p>
+                          )}
+                        </div>
+                      </Link>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{item.title}</p>
-                      {item.episode && (
-                        <p className="text-xs text-gray-500">看到第 {item.episode} 集</p>
-                      )}
-                    </div>
-                  </Link>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </header>
   );
