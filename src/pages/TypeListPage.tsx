@@ -8,10 +8,11 @@ import { Video } from '../api/types';
 
 // 定义类型映射
 const TYPE_MAP: { [key: string]: { id: number; title: string } } = {
-  movies: { id: 6, title: '📺' },
+  movies: { id: 6, title: '电影' },
   tv: { id: 13, title: '电视剧' },
   anime: { id: 60, title: '动漫' },
-  variety: { id: 38, title: '综艺' }
+  variety: { id: 38, title: '综艺' },
+  short: { id: 27, title: '短剧' }
 };
 
 // 定义电影子分类映射
@@ -67,6 +68,22 @@ const VARIETY_SUB_TYPES = [
   { id: 44, name: '其他综艺' }
 ];
 
+// 定义短剧子分类映射
+const SHORT_SUB_TYPES = [
+  { id: 47, name: '逆袭短剧' },
+  { id: 45, name: '古装短剧' },
+  { id: 46, name: '虐恋短剧' },
+  { id: 48, name: '悬疑短剧' },
+  { id: 49, name: '神豪短剧' },
+  { id: 50, name: '重生短剧' },
+  { id: 51, name: '复仇短剧' },
+  { id: 52, name: '穿越短剧' },
+  { id: 53, name: '甜宠短剧' },
+  { id: 54, name: '强者短剧' },
+  { id: 55, name: '萌宝短剧' },
+  { id: 56, name: '其它短剧' },
+];
+
 interface TypeListPageProps {
   type: string;
 }
@@ -82,6 +99,7 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
   const [selectedTvType, setSelectedTvType] = useState(13); // 默认选中国产剧
   const [selectedAnimeType, setSelectedAnimeType] = useState(60); // 默认选中欧美动漫
   const [selectedVarietyType, setSelectedVarietyType] = useState(38); // 默认选中国产综艺
+  const [selectedShortType, setSelectedShortType] = useState(47); // 默认选中古装短剧
   const observer = useRef<IntersectionObserver | null>(null);
   const lastVideoElementRef = useCallback((node: HTMLDivElement | null) => {
     if (loading) return;
@@ -105,7 +123,8 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
           t: type === 'movies' ? selectedMovieType : 
              type === 'tv' ? selectedTvType :
              type === 'anime' ? selectedAnimeType :
-             type === 'variety' ? selectedVarietyType : 
+             type === 'variety' ? selectedVarietyType :
+             type === 'short' ? selectedShortType :
              TYPE_MAP[type].id,
           pg: page,
           pagesize: 24,
@@ -122,7 +141,7 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
     };
 
     fetchVideos();
-  }, [type, page, selectedMovieType, selectedTvType, selectedAnimeType, selectedVarietyType]);
+  }, [type, page, selectedMovieType, selectedTvType, selectedAnimeType, selectedVarietyType, selectedShortType]);
 
   if (!type || !TYPE_MAP[type]) {
     return (
@@ -226,6 +245,30 @@ const TypeListPage: React.FC<TypeListPageProps> = ({ type }) => {
                   }}
                   className={`px-2 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-all duration-200 ${
                     selectedVarietyType === subType.id
+                      ? 'bg-primary text-white shadow-sm'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {subType.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {type === 'short' && (
+          <div className="mb-6">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
+              {SHORT_SUB_TYPES.map(subType => (
+                <button
+                  key={subType.id}
+                  onClick={() => {
+                    setSelectedShortType(subType.id);
+                    setPage(1);
+                    setVideos([]);
+                  }}
+                  className={`px-2 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap transition-all duration-200 ${
+                    selectedShortType === subType.id
                       ? 'bg-primary text-white shadow-sm'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}

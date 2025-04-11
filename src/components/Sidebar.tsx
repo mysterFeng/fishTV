@@ -5,7 +5,8 @@ import {
   HiFilm, 
   HiDesktopComputer, 
   HiSparkles, 
-  HiStar 
+  HiStar,
+  HiVideoCamera
 } from 'react-icons/hi';
 import { HiCog6Tooth } from 'react-icons/hi2';
 import Logo from './Logo';
@@ -17,9 +18,10 @@ const Sidebar = () => {
   const menuItems = [
     { id: 1, name: '首页', icon: HiHome, link: '/' },
     { id: 2, name: '电影', icon: HiFilm, link: '/movies' },
+    { id: 5, name: '综艺', icon: HiStar, link: '/variety' },
     { id: 3, name: '电视剧', icon: HiDesktopComputer, link: '/tv' },
     { id: 4, name: '动漫', icon: HiSparkles, link: '/anime' },
-    { id: 5, name: '综艺', icon: HiStar, link: '/variety' },
+    { id: 6, name: '短剧', icon: HiVideoCamera, link: '/short' },
   ];
 
   return (

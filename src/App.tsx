@@ -157,6 +157,7 @@ function App() {
             <Route path="/tv" element={<TypeListPage type="tv" />} />
             <Route path="/anime" element={<TypeListPage type="anime" />} />
             <Route path="/variety" element={<TypeListPage type="variety" />} />
+            <Route path="/short" element={<TypeListPage type="short" />} />
           </Routes>
           <ThemeToggle />
         </Router>
