@@ -83,6 +83,15 @@ const VideoPlayer = ({
         styleElement.textContent = styles;
         document.head.appendChild(styleElement);
 
+        // 添加键盘事件监听器
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key.toLowerCase() === 'f') {
+                toggleFullscreen();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+
         // 只在 m3u 链接时初始化 DPlayer
         if (videoUrl.includes("m3u") && playerRef.current) {
             // 如果已经存在 DPlayer 实例，先销毁它
@@ -94,13 +103,19 @@ const VideoPlayer = ({
                 container: playerRef.current,
                 video: {
                     url: videoUrl,
-                    // pic: 'https://img2.baidu.com/it/u=2899654337,1741233696&fm=253&fmt=auto&app=120&f=JPEG?w=1280&h=800',
                     type: 'customHls',
                     customType: {
                         customHls: function (video: HTMLVideoElement) {
                             const hls = new Hls();
                             hls.loadSource(video.src);
                             hls.attachMedia(video);
+                            
+                            // 添加双击全屏事件
+                            video.addEventListener('dblclick', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFullscreen();
+                            });
                         }
                     }
                 },
@@ -122,6 +137,8 @@ const VideoPlayer = ({
             }
             // 移除自定义样式
             document.head.removeChild(styleElement);
+            // 移除键盘事件监听器
+            document.removeEventListener('keydown', handleKeyPress);
         };
     }, [videoUrl]);
 
