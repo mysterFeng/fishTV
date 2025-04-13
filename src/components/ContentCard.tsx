@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { VIDEO_SOURCES } from '../api/config';
 
 interface ContentCardProps {
   id: number;
@@ -8,11 +9,12 @@ interface ContentCardProps {
   rating?: string;
   episodeCount?: string;
   isNew?: boolean;
+  source?: keyof typeof VIDEO_SOURCES;
 }
 
-const ContentCard = ({ id, title, imageUrl, rating, episodeCount, isNew }: ContentCardProps) => {
+const ContentCard = ({ id, title, imageUrl, rating, episodeCount, isNew, source }: ContentCardProps) => {
   return (
-    <Link to={`/detail/${id}`} className="block">
+    <Link to={`/detail/${id}${source ? `/${source}` : ''}`} className="block">
       <div className="content-card relative bg-white rounded-md overflow-hidden shadow-sm">
         <div className="relative pb-[140%]">
           <img

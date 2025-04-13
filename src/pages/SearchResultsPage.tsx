@@ -4,6 +4,7 @@ import Layout from '../components/Layout';
 import ContentCard from '../components/ContentCard';
 import { getVideoList } from '../api/video';
 import { Video } from '../api/types';
+import { VIDEO_SOURCES } from '../api/config';
 
 const SearchResultsPage = () => {
   const location = useLocation();
@@ -13,24 +14,34 @@ const SearchResultsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>('moyu');
 
+  // 从URL参数初始化状态
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get('q') || '';
     const pageParam = params.get('page');
+    const sourceParam = params.get('source') as keyof typeof VIDEO_SOURCES;
     
     if (pageParam) {
       setPage(parseInt(pageParam, 10));
     }
     
-    setSearchTerm(query);
+    if (sourceParam && sourceParam in VIDEO_SOURCES) {
+      setSelectedSource(sourceParam);
+    }
     
-    if (query) {
-      fetchSearchResults(query, pageParam ? parseInt(pageParam, 10) : 1);
+    setSearchTerm(query);
+  }, [location.search]);
+
+  // 处理搜索请求
+  useEffect(() => {
+    if (searchTerm) {
+      fetchSearchResults(searchTerm, page);
     } else {
       setLoading(false);
     }
-  }, [location.search]);
+  }, [searchTerm, page, selectedSource]);
 
   const fetchSearchResults = async (query: string, currentPage: number) => {
     setLoading(true);
@@ -40,7 +51,7 @@ const SearchResultsPage = () => {
         wd: query,
         pg: currentPage - 1,
         pagesize: 24,
-      });
+      }, VIDEO_SOURCES[selectedSource].url);
       
       setSearchResults(response.list);
       setTotalPages(response.pagecount);
@@ -53,15 +64,36 @@ const SearchResultsPage = () => {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    navigate(`/search?q=${searchTerm}&page=${newPage}`);
+    navigate(`/search?q=${searchTerm}&page=${newPage}&source=${selectedSource}`);
+  };
+
+  const handleSourceChange = (source: keyof typeof VIDEO_SOURCES) => {
+    setSelectedSource(source);
+    setPage(1);
+    navigate(`/search?q=${searchTerm}&page=1&source=${source}`);
   };
 
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">
-          搜索结果: {searchTerm}
-        </h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">
+            搜索结果: {searchTerm}
+          </h1>
+          
+          {/* 数据源选择下拉菜单 */}
+          <select
+            value={selectedSource}
+            onChange={(e) => handleSourceChange(e.target.value as keyof typeof VIDEO_SOURCES)}
+            className="px-3 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white text-sm"
+          >
+            {Object.entries(VIDEO_SOURCES).map(([key, source]) => (
+              <option key={key} value={key}>
+                {source.name}
+              </option>
+            ))}
+          </select>
+        </div>
         
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -78,6 +110,7 @@ const SearchResultsPage = () => {
                   imageUrl={item.vod_pic}
                   rating={typeof item.vod_score === 'number' ? item.vod_score.toFixed(1) : undefined}
                   episodeCount={item.vod_play_url ? item.vod_play_url.split('#').length.toString() : undefined}
+                  source={selectedSource}
                 />
               ))}
             </div>

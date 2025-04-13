@@ -149,7 +149,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/detail/:id" element={<DetailPage />} />
+            <Route path="/detail/:id/:source?" element={<DetailPage />} />
             <Route path="/play/:id/:episode?/:source?" element={<PlayPage />} />
             <Route path="/search" element={<SearchResultsPage />} />
             <Route path="/history" element={<HistoryPage />} />

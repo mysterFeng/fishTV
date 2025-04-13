@@ -30,6 +30,8 @@ const styles = `
             max-height: 400px !important;
             margin: 12px auto !important;
             border-radius: 8px !important;
+            position: relative !important;
+            padding-bottom: 56.25% !important;
         }
     }
 
@@ -39,7 +41,18 @@ const styles = `
             margin: 16px auto !important;
             border-radius: 8px !important;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            position: relative !important;
+            padding-bottom: 56.25% !important;
         }
+    }
+
+    .video-container iframe {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
     }
 `;
 
@@ -135,14 +148,6 @@ const VideoPlayer = ({
                 {!videoUrl.includes("m3u") ? (
                     <iframe
                         src={videoUrl}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            border: 'none',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0
-                        }}
                         allowFullScreen
                     />
                 ) : (
