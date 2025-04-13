@@ -54,19 +54,19 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      <div className="mt-auto pt-4 border-t border-gray-100">
-        <a
-          href="/settings"
-          className={`flex items-center gap-3 px-4 py-2.5 text-gray-600 rounded-lg transition-all duration-200 ${
-            location.pathname === '/settings' 
-              ? 'bg-gradient-to-r from-red-50 to-pink-50 text-red-600 shadow-sm' 
-              : 'hover:bg-gray-50 hover:text-gray-900'
-          }`}
-        >
-          <HiCog6Tooth className={`w-5 h-5 ${location.pathname === '/settings' ? 'text-red-500' : 'text-gray-400'}`} />
-          <span className="font-medium">设置</span>
-        </a>
-      </div>
+      {/*<div className="mt-auto pt-4 border-t border-gray-100">*/}
+      {/*  <a*/}
+      {/*    href="/settings"*/}
+      {/*    className={`flex items-center gap-3 px-4 py-2.5 text-gray-600 rounded-lg transition-all duration-200 ${*/}
+      {/*      location.pathname === '/settings' */}
+      {/*        ? 'bg-gradient-to-r from-red-50 to-pink-50 text-red-600 shadow-sm' */}
+      {/*        : 'hover:bg-gray-50 hover:text-gray-900'*/}
+      {/*    }`}*/}
+      {/*  >*/}
+      {/*    <HiCog6Tooth className={`w-5 h-5 ${location.pathname === '/settings' ? 'text-red-500' : 'text-gray-400'}`} />*/}
+      {/*    <span className="font-medium">设置</span>*/}
+      {/*  </a>*/}
+      {/*</div>*/}
     </div>
   );
 };
