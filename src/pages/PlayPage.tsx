@@ -75,7 +75,6 @@ const PlayPage = () => {
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>(() => {
-    // 优先使用 URL 中的 source 参数，如果没有则从历史记录中获取，最后使用默认值
     if (source && source in VIDEO_SOURCES) {
       return source as keyof typeof VIDEO_SOURCES;
     }
@@ -83,6 +82,24 @@ const PlayPage = () => {
     return (lastHistory?.source as keyof typeof VIDEO_SOURCES) || 'moyu';
   });
   const [currentEpisode, setCurrentEpisode] = useState(Number(episode || '1'));
+  const [sourceStartIndex, setSourceStartIndex] = useState(0);
+  const sourcesPerPage = 3; // 每页显示的数据源数量改为3个
+
+  // 计算当前显示的数据源
+  const visibleSources = Object.entries(VIDEO_SOURCES).slice(sourceStartIndex, sourceStartIndex + sourcesPerPage);
+  const canShowPrev = sourceStartIndex > 0;
+  const canShowNext = sourceStartIndex + sourcesPerPage < Object.keys(VIDEO_SOURCES).length;
+
+  const handlePrevSources = () => {
+    setSourceStartIndex(Math.max(0, sourceStartIndex - sourcesPerPage));
+  };
+
+  const handleNextSources = () => {
+    setSourceStartIndex(Math.min(
+      Object.keys(VIDEO_SOURCES).length - sourcesPerPage,
+      sourceStartIndex + sourcesPerPage
+    ));
+  };
 
   // 获取视频详情的函数
   const fetchVideo = async (source: keyof typeof VIDEO_SOURCES) => {
@@ -253,26 +270,58 @@ const PlayPage = () => {
 
           {/* Episode selection section */}
           <div className="lg:w-80 bg-white rounded-lg p-4">
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold">选集播放</h2>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(VIDEO_SOURCES).map(([key, source]) => (
-                  <button
-                    key={key}
-                    className={`px-4 py-2 rounded-full transition-colors text-sm ${
-                      selectedSource === key
-                        ? 'bg-primary text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                    onClick={() => handleSourceChange(key as keyof typeof VIDEO_SOURCES)}
-                  >
-                    {source.name}
-                  </button>
-                ))}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={handlePrevSources}
+                  disabled={!canShowPrev}
+                  className={`p-1.5 rounded-lg transition-all ${
+                    canShowPrev
+                      ? 'text-gray-600 hover:bg-gray-100'
+                      : 'text-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+
+                <div className="flex-1 flex gap-1.5">
+                  {visibleSources.map(([key, source]) => (
+                    <button
+                      key={key}
+                      className={`flex-1 px-3 py-2 rounded-lg transition-all text-sm font-medium whitespace-nowrap overflow-hidden ${
+                        selectedSource === key
+                          ? 'bg-primary text-white shadow-lg'
+                          : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-gray-800'
+                      }`}
+                      onClick={() => handleSourceChange(key as keyof typeof VIDEO_SOURCES)}
+                    >
+                      <span className="block text-center truncate">{source.name}</span>
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  onClick={handleNextSources}
+                  disabled={!canShowNext}
+                  className={`p-1.5 rounded-lg transition-all ${
+                    canShowNext
+                      ? 'text-gray-600 hover:bg-gray-100'
+                      : 'text-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
               </div>
+
+              <div className="border-t border-gray-200 my-2"></div>
             </div>
 
             {/* Episodes grid */}

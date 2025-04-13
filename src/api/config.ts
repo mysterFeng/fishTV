@@ -5,17 +5,26 @@ export const API_CONFIG = {
 
 export const VIDEO_SOURCES = {
   moyu: {
-    name: '摸鱼☁️',
+    name: '摸鱼云️',
     url: 'https://tv.codebug.icu/heimuer/api.php'
   },
-  subocaiji: {
-    name: '摸鱼🐟',
-    url: 'https://tv.codebug.icu/subocaiji/api.php'
-  },
-  wujin: {
-    name: '摸鱼🎣',
+  feifan: {
+    name: '非凡云',
     url: 'https://tv.codebug.icu/ikun/api.php'
   },
+  modu: {
+    name: '魔都云',
+    url: 'https://tv.codebug.icu/modu/api.php'
+  },
+  youzhi: {
+    name: '优质云',
+    url: 'https://tv.codebug.icu/youzhi/inc/apijson.php'
+  },
+  subocaiji: {
+    name: '速播云',
+    url: 'https://tv.codebug.icu/subocaiji/api.php'
+  },
+
 };
 
 export const setBaseURL = (url: string) => {

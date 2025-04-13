@@ -14,7 +14,7 @@ const SearchResultsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>('moyu');
+  const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>('feifan');
 
   // 从URL参数初始化状态
   useEffect(() => {
