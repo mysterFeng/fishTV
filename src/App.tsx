@@ -8,6 +8,7 @@ import PlayPage from './pages/PlayPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import HistoryPage from './pages/HistoryPage';
 import { HistoryProvider } from './context/HistoryContext';
+import { SearchHistoryProvider } from './context/SearchHistoryContext';
 import { ThemeProvider } from './context/ThemeContext';
 import ThemeToggle from './components/ThemeToggle';
 import { bannerData, trendingContent, tvContent, animeContent } from './data/sampleData';
@@ -142,28 +143,30 @@ const HomePage = () => {
   );
 };
 
-function App() {
+const App: React.FC = () => {
   return (
     <ThemeProvider>
       <HistoryProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/detail/:id/:source?" element={<DetailPage />} />
-            <Route path="/play/:id/:episode?/:source?" element={<PlayPage />} />
-            <Route path="/search" element={<SearchResultsPage />} />
-            <Route path="/history" element={<HistoryPage />} />
-            <Route path="/movies" element={<TypeListPage type="movies" />} />
-            <Route path="/tv" element={<TypeListPage type="tv" />} />
-            <Route path="/anime" element={<TypeListPage type="anime" />} />
-            <Route path="/variety" element={<TypeListPage type="variety" />} />
-            <Route path="/short" element={<TypeListPage type="short" />} />
-          </Routes>
-          <ThemeToggle />
-        </Router>
+        <SearchHistoryProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/movies" element={<TypeListPage type="movies" />} />
+              <Route path="/tv" element={<TypeListPage type="tv" />} />
+              <Route path="/anime" element={<TypeListPage type="anime" />} />
+              <Route path="/variety" element={<TypeListPage type="variety" />} />
+              <Route path="/short" element={<TypeListPage type="short" />} />
+              <Route path="/detail/:id/:source?" element={<DetailPage />} />
+              <Route path="/play/:id/:episode?/:source?" element={<PlayPage />} />
+              <Route path="/search" element={<SearchResultsPage />} />
+              <Route path="/history" element={<HistoryPage />} />
+            </Routes>
+            <ThemeToggle />
+          </Router>
+        </SearchHistoryProvider>
       </HistoryProvider>
     </ThemeProvider>
   );
-}
+};
 
 export default App;
