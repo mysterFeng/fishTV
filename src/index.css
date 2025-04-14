@@ -112,7 +112,6 @@ body {
 /* 暗黑模式样式 */
 html.dark {
   filter: invert(1) hue-rotate(180deg);
-  transition: filter 0.5s ease-in-out;
 }
 
 /* 不需要反转的元素 */
@@ -121,7 +120,6 @@ html.dark video,
 html.dark iframe,
 html.dark .no-invert {
   filter: invert(1) hue-rotate(180deg);
-  transition: filter 0.5s ease-in-out;
 }
 
 /* 暗黑模式切换按钮 */
