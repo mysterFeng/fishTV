@@ -6,21 +6,43 @@ import Hls from 'hls.js';
 const styles = `
     .dplayer {
         height: 100% !important;
+        filter: none !important;
+        -webkit-filter: none !important;
     }
     .dplayer-video {
         height: 100% !important;
         object-fit: contain !important;
+        filter: none !important;
+        -webkit-filter: none !important;
     }
     .dplayer-video-current {
         height: 100% !important;
         object-fit: contain !important;
+        filter: none !important;
+        -webkit-filter: none !important;
     }
     .dplayer-video-wrap {
         height: 100% !important;
+        filter: none !important;
+        -webkit-filter: none !important;
     }
     .dplayer-controller {
         position: absolute !important;
         bottom: 0 !important;
+    }
+    .video-container {
+        filter: none !important;
+        -webkit-filter: none !important;
+    }
+    .video-container iframe {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+        filter: none !important;
+        -webkit-filter: none !important;
     }
 
     @media (max-width: 640px) {
@@ -44,15 +66,6 @@ const styles = `
             position: relative !important;
             padding-bottom: 56.25% !important;
         }
-    }
-
-    .video-container iframe {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        border: none !important;
     }
 `;
 
