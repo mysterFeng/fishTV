@@ -2,6 +2,13 @@ import React, {useState, useRef, useEffect} from 'react';
 import DPlayer, {DPlayerEvents} from 'dplayer';
 import Hls from 'hls.js';
 
+// 添加 NodeJS 类型声明
+declare global {
+    interface Window {
+        NodeJS: any;
+    }
+}
+
 // 添加自定义样式
 const styles = `
     .dplayer {
@@ -89,6 +96,20 @@ const VideoPlayer = ({
     const [showPublicNotice, setShowPublicNotice] = useState(true);
     const playerRef = useRef<HTMLDivElement>(null);
     const dpRef = useRef<DPlayer | null>(null);
+    const progressTimerRef = useRef<number | null>(null);
+
+    // 获取存储的播放进度
+    const getStoredProgress = () => {
+        const key = `video_progress_${id}_${episode}`;
+        const stored = localStorage.getItem(key);
+        return stored ? parseFloat(stored) : 0;
+    };
+
+    // 保存播放进度
+    const saveProgress = (progress: number) => {
+        const key = `video_progress_${id}_${episode}`;
+        localStorage.setItem(key, progress.toString());
+    };
 
     useEffect(() => {
         // 添加自定义样式
@@ -112,6 +133,8 @@ const VideoPlayer = ({
                 dpRef.current.destroy();
             }
             
+            const storedProgress = getStoredProgress();
+            
             dpRef.current = new DPlayer({
                 container: playerRef.current,
                 video: {
@@ -123,12 +146,26 @@ const VideoPlayer = ({
                             hls.loadSource(video.src);
                             hls.attachMedia(video);
                             
+                            // 设置上次播放进度
+                            if (storedProgress > 0) {
+                                video.addEventListener('loadedmetadata', () => {
+                                    video.currentTime = storedProgress;
+                                });
+                            }
+                            
                             // 添加双击全屏事件
                             video.addEventListener('dblclick', (e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 toggleFullscreen();
                             });
+
+                            // 定期保存播放进度
+                            progressTimerRef.current = setInterval(() => {
+                                if (!video.paused) {
+                                    saveProgress(video.currentTime);
+                                }
+                            }, 5000); // 每5秒保存一次进度
                         }
                     }
                 },
@@ -145,6 +182,16 @@ const VideoPlayer = ({
         }
 
         return () => {
+            // 清除进度保存定时器
+            if (progressTimerRef.current) {
+                clearInterval(progressTimerRef.current);
+            }
+            
+            // 保存最后的播放进度
+            if (dpRef.current && dpRef.current.video) {
+                saveProgress(dpRef.current.video.currentTime);
+            }
+            
             if (dpRef.current) {
                 dpRef.current.destroy();
             }
