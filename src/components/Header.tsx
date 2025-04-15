@@ -10,8 +10,8 @@ const Header = () => {
   const [showHistory, setShowHistory] = useState(false);
   const [showWatchHistory, setShowWatchHistory] = useState(false);
   const navigate = useNavigate();
-  const { history } = useHistory();
-  const { history: searchHistory, addToHistory, removeFromHistory, clearHistory } = useSearchHistory();
+  const { history, removeFromHistory } = useHistory();
+  const { history: searchHistory, addToHistory, removeFromHistory: removeFromSearchHistory, clearHistory } = useSearchHistory();
   const timeoutRef = useRef<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const watchHistoryRef = useRef<HTMLDivElement>(null);
@@ -130,7 +130,7 @@ const Header = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            removeFromHistory(index);
+                            removeFromSearchHistory(index);
                           }}
                           className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600"
                         >
@@ -184,6 +184,15 @@ const Header = () => {
                             )}
                           </div>
                         </Link>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFromHistory(item.id);
+                          }}
+                          className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-gray-600"
+                        >
+                          <HiX className="w-4 h-4" />
+                        </button>
                       </div>
                     ))}
                   </div>
