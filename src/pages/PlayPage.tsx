@@ -71,7 +71,7 @@ const relatedContent = [
 const PlayPage = () => {
   const { id, episode, source } = useParams<{ id: string; episode?: string; source?: string }>();
   const navigate = useNavigate();
-  const { addToHistory, history } = useHistory();
+  const { addToHistory, history, removeFromHistory } = useHistory();
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSource, setSelectedSource] = useState<keyof typeof VIDEO_SOURCES>(() => {
@@ -199,6 +199,21 @@ const PlayPage = () => {
     setCurrentEpisode(ep);
     // 更新 URL 时保持当前的数据源
     navigate(`/play/${id}/${ep}/${selectedSource}`);
+    
+    // 移除旧的历史记录
+    removeFromHistory(id || '');
+    
+    // 添加新的历史记录
+    if (video) {
+      addToHistory({
+        id: video.vod_id.toString(),
+        title: video.vod_name,
+        imageUrl: video.vod_pic,
+        episode: ep.toString(),
+        lastWatched: new Date(),
+        source: selectedSource
+      });
+    }
   };
 
   if (loading) {
